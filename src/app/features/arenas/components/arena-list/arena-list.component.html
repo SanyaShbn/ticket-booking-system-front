@@ -1,6 +1,27 @@
 <mat-toolbar color="primary">
     <span>Arenas List</span>
-  </mat-toolbar>
+    <span class="spacer"></span>
+    <button mat-raised-button color="accent" (click)="addArena()">Add New Arena</button>
+</mat-toolbar>
+
+  <form [formGroup]="filterForm" (ngSubmit)="loadArenas()">
+    <mat-form-field>
+      <mat-label>City</mat-label>
+      <input matInput formControlName="city">
+    </mat-form-field>
+  
+    <mat-form-field>
+      <mat-label>Capacity Sort Order</mat-label>
+      <input matInput formControlName="capacitySortOrder">
+    </mat-form-field>
+  
+    <mat-form-field>
+      <mat-label>Seats Number Sort Order</mat-label>
+      <input matInput formControlName="seatsNumbSortOrder">
+    </mat-form-field>
+  
+    <button mat-raised-button color="primary" type="submit">Filter</button>
+  </form>
   
   <div class="mat-elevation-z8">
     <mat-table [dataSource]="dataSource" matSort matSortActive="name" matSortDirection="asc">
@@ -41,4 +62,4 @@
     </mat-table>
   
     <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
-</div>  
+  </div>  

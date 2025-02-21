@@ -20,12 +20,6 @@
         <mat-error *ngIf="arenaForm.get('capacity')?.hasError('min')">Minimum capacity is 1</mat-error>
       </mat-form-field>
   
-      <mat-form-field>
-        <mat-label>General Seats Number</mat-label>
-        <input matInput id="generalSeatsNumb" formControlName="generalSeatsNumb" type="number" required>
-        <mat-error *ngIf="arenaForm.get('generalSeatsNumb')?.hasError('required')">General Seats Number is required</mat-error>
-      </mat-form-field>
-  
       <div class="form-buttons">
         <button mat-raised-button color="primary" type="submit">Save</button>
         <button mat-button type="button" (click)="cancel()">Cancel</button>

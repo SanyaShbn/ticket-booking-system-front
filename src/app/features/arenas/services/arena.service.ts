@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Arena } from '../models/arena.model';
 
@@ -11,8 +11,18 @@ export class ArenaService {
 
   constructor(private http: HttpClient) { }
 
-  getArenas(): Observable<Arena[]> {
-    return this.http.get<Arena[]>(this.apiUrl);
+  getArenas(city: string, capacitySortOrder: string, seatsNumbSortOrder: string, page: number, size: number, 
+    sort: string, direction: string, filter: string): Observable<any> {
+    let params = new HttpParams()
+      .set('city', city)
+      .set('capacitySortOrder', capacitySortOrder)
+      .set('seatsNumbSortOrder', seatsNumbSortOrder)
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sort', `${sort},${direction}`)
+      .set('filter', filter);
+
+    return this.http.get<any>(this.apiUrl, { params });
   }
 
   getArena(id: number): Observable<Arena> {

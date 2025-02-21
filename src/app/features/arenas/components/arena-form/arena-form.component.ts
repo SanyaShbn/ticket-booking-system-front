@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { NgIf } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http'
 
 @Component({
   selector: 'app-arena-form',
@@ -20,7 +21,8 @@ import { NgIf } from '@angular/common';
     MatCardModule,
     MatButtonModule,
     ReactiveFormsModule,
-    NgIf // добавляем NgIf для использования *ngIf
+    NgIf,
+    HttpClientModule
   ]
 })
 export class ArenaFormComponent implements OnInit {
@@ -36,8 +38,7 @@ export class ArenaFormComponent implements OnInit {
     this.arenaForm = this.fb.group({
       name: ['', Validators.required],
       city: ['', Validators.required],
-      capacity: [0, [Validators.required, Validators.min(1)]],
-      generalSeatsNumb: [0, Validators.required]
+      capacity: [0, [Validators.required, Validators.min(1)]]
     });
   }
 
