@@ -13,7 +13,7 @@ import { HttpClientModule } from '@angular/common/http'
 @Component({
   selector: 'app-arena-form',
   templateUrl: './arena-form.component.html',
-  styleUrls: ['./arena-form.component.css'],
+  styleUrls: ['./arena-form.component.scss'],
   standalone: true,
   imports: [
     MatInputModule,
@@ -38,7 +38,7 @@ export class ArenaFormComponent implements OnInit {
     this.arenaForm = this.fb.group({
       name: ['', Validators.required],
       city: ['', Validators.required],
-      capacity: [0, [Validators.required, Validators.min(1)]]
+      capacity: [0, [Validators.required, Validators.min(1), Validators.max(22000)]]
     });
   }
 

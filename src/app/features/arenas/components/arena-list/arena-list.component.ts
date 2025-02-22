@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ArenaService } from '../../services/arena.service';
 import { Arena } from '../../models/arena.model';
@@ -10,16 +9,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ArenaFilterComponent } from '../arena-filter/arena-filter.component';
+import { PaginatorComponent } from '../../../../shared/paginator/paginator.component';
 
 @Component({
   selector: 'app-arena-list',
   templateUrl: './arena-list.component.html',
-  styleUrls: ['./arena-list.component.css'],
+  styleUrls: ['./arena-list.component.scss'],
   imports: [
     MatToolbarModule,
     MatButtonModule,
@@ -27,46 +27,62 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
     MatInputModule,
     MatFormFieldModule,
     MatTableModule,
-    MatPaginatorModule,
     MatSortModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ArenaFilterComponent,
+    PaginatorComponent
   ]
 })
 export class ArenaListComponent implements OnInit {
   displayedColumns: string[] = ['name', 'city', 'capacity', 'generalSeatsNumb', 'actions'];
   dataSource = new MatTableDataSource<Arena>();
-  filterForm: FormGroup;
+  page: number = 0;
+  size: number = 10;
+  totalElements: number = 0;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private arenaService: ArenaService, private fb: FormBuilder, private router: Router) { 
-    this.filterForm = this.fb.group({
-      city: [''],
-      capacitySortOrder: [''],
-      seatsNumbSortOrder: ['']
-    });
-  }
+  filters = {
+    city: '',
+    capacitySortOrder: '',
+    seatsNumbSortOrder: ''
+  };
 
-  ngOnInit(): void {
+  constructor(private arenaService: ArenaService, private router: Router) { }
+
+  ngOnInit(): void {}
+
+  ngAfterViewInit(): void {
+    this.sort.sortChange.subscribe(() => {
+      this.page = 0;
+      this.loadArenas();
+    });
     this.loadArenas();
   }
 
-  loadArenas(): void {
-    const city = this.filterForm.get('city')?.value || '';
-    const capacitySortOrder = this.filterForm.get('capacitySortOrder')?.value || '';
-    const seatsNumbSortOrder = this.filterForm.get('seatsNumbSortOrder')?.value || '';
-    const page = this.paginator.pageIndex;
-    const size = this.paginator.pageSize;
+  async loadArenas() {
     const sort = this.sort.active;
     const direction = this.sort.direction;
-    const filter = this.dataSource.filter;
-
-    this.arenaService.getArenas(city, capacitySortOrder, seatsNumbSortOrder, page, size, sort, direction, filter).subscribe(data => {
+  
+    this.arenaService.getArenas(
+      this.filters.city, 
+      this.filters.capacitySortOrder, 
+      this.filters.seatsNumbSortOrder, 
+      this.page, 
+      this.size, 
+      sort, 
+      direction
+    ).subscribe(data => {
       this.dataSource.data = data.content;
-      this.paginator.length = data.totalElements;
+      this.totalElements = data.metadata.totalElements;
     });
+  }  
+
+  onFilterChanged(filters: any): void {
+    this.filters = filters;
+    this.page = 0;
+    this.loadArenas();
   }
 
   addArena(): void {
@@ -80,14 +96,18 @@ export class ArenaListComponent implements OnInit {
   deleteArena(id: number): void {
     this.arenaService.deleteArena(id).subscribe(() => {
       this.loadArenas();
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
     });
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  onPageChange(newPage: number): void {
+    this.page = newPage;
     this.loadArenas();
   }
+
+  onSizeChange(newSize: number): void {
+    this.size = newSize;
+    this.page = 0;
+    this.loadArenas();
+  }
+
 }

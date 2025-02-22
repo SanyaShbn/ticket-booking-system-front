@@ -12,15 +12,15 @@ export class ArenaService {
   constructor(private http: HttpClient) { }
 
   getArenas(city: string, capacitySortOrder: string, seatsNumbSortOrder: string, page: number, size: number, 
-    sort: string, direction: string, filter: string): Observable<any> {
+    sort: string, direction: string): Observable<any> {
     let params = new HttpParams()
       .set('city', city)
       .set('capacitySortOrder', capacitySortOrder)
       .set('seatsNumbSortOrder', seatsNumbSortOrder)
       .set('page', page.toString())
       .set('size', size.toString())
-      .set('sort', `${sort},${direction}`)
-      .set('filter', filter);
+      .set('sort', sort)
+      .set('direction', direction);
 
     return this.http.get<any>(this.apiUrl, { params });
   }
@@ -37,7 +37,7 @@ export class ArenaService {
     return this.http.put<Arena>(`${this.apiUrl}/${id}`, arena);
   }
 
-  deleteArena(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  deleteArena(id: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`);
   }
 }

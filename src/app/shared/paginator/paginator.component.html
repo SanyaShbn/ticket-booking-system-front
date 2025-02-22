@@ -1,0 +1,11 @@
+<div class="paginator">
+    <button mat-button (click)="previousPage()" [disabled]="page === 0">Previous</button>
+    <span>Page {{ page + 1 }} of {{ math.ceil(totalElements / size) }}</span>
+    <button mat-button (click)="nextPage()" [disabled]="page >= math.ceil(totalElements / size) - 1">Next</button>
+    <mat-form-field>
+      <mat-label>Items per page</mat-label>
+      <mat-select [(value)]="size" (selectionChange)="onSizeChange($event.value)">
+        <mat-option *ngFor="let option of [5, 10, 20]" [value]="option">{{ option }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+</div>  

@@ -13,11 +13,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 
-import { AppRoutingModule } from './app.routes';
-import { ArenaListComponent } from './features/arenas/components/arena-list/arena-list.component';
-import { ArenaFormComponent } from './features/arenas/components/arena-form/arena-form.component';
-import { ArenaService } from './features/arenas/services/arena.service';
-
 @NgModule({
   imports: [
     BrowserModule,
@@ -32,11 +27,8 @@ import { ArenaService } from './features/arenas/services/arena.service';
     MatToolbarModule,
     MatCardModule,
     MatPaginatorModule,
-    MatSortModule,
-    AppRoutingModule,
-    ArenaListComponent,
-    ArenaFormComponent
+    MatSortModule
   ],
-  providers: [ArenaService]
+  providers: []
 })
 export class AppModule { }
