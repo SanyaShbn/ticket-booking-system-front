@@ -11,8 +11,10 @@ sidenav-container {
 }
   
 mat-nav-list a {
+    width: 95%;
     display: flex;
     align-items: center;
+    justify-self: center;
     color: white;
 }
   

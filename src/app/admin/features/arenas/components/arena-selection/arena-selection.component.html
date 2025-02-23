@@ -1,0 +1,27 @@
+<div class="arena-selection">
+    <h2>Select an Arena to View Its Sectors</h2>
+    
+    <app-arena-filter (filterChanged)="onFilterChanged($event)"></app-arena-filter>
+  
+    <div class="arena-cards">
+      <mat-card *ngFor="let arena of dataSource.data" (click)="selectArena(arena.id)">
+        <mat-card-title>{{ arena.name }}</mat-card-title>
+        <mat-card-subtitle>{{ arena.city }}</mat-card-subtitle>
+        <mat-card-content>
+          <p>Capacity: {{ arena.capacity }}</p>
+          <p>General Seats Number: {{ arena.generalSeatsNumb }}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button>View Sectors</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  
+    <app-paginator 
+      [page]="page" 
+      [size]="size" 
+      [totalElements]="totalElements" 
+      (pageChange)="onPageChange($event)" 
+      (sizeChange)="onSizeChange($event)">
+    </app-paginator>
+</div>  

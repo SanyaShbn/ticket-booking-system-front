@@ -1,0 +1,16 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: white;
+}
+  
+.mat-elevation-z8 {
+    background-color: #FFB6C1;
+    border-radius: 8px;
+    padding: 16px;
+}
+  
+mat-header-cell, mat-cell {
+    text-align: center;
+}  

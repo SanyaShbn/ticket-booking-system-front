@@ -11,6 +11,10 @@ export class ArenaService {
 
   constructor(private http: HttpClient) { }
 
+  getAllArenas(): Observable<Arena[]> {
+    return this.http.get<Arena[]>(`${this.apiUrl}/all`);
+  }
+
   getArenas(city: string, capacitySortOrder: string, seatsNumbSortOrder: string, page: number, size: number, 
     sort: string, direction: string): Observable<any> {
     let params = new HttpParams()
