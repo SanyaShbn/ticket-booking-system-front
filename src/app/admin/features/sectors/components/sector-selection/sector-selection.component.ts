@@ -1,55 +1,43 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatSort } from '@angular/material/sort';
 import { SectorService } from '../../services/sector.service';
 import { Sector } from '../../models/sector.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { PaginatorComponent } from '../../../../../shared/paginator/paginator.component';
-import { MatTableModule } from '@angular/material/table';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
 import { NgIf } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component'; 
 
 @Component({
-  selector: 'app-sector-list',
-  templateUrl: './sector-list.component.html',
-  styleUrls: ['./sector-list.component.scss'],
+  selector: 'app-sector-selection',
+  templateUrl: './sector-selection.component.html',
+  styleUrls: ['./sector-selection.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
-    MatTableModule,
-    MatSortModule,
+    ReactiveFormsModule,
     FilterComponent,
     PaginatorComponent,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatToolbarModule,
+    MatCardModule,
     MatButtonModule,
     NgIf,
     MatProgressSpinnerModule
   ]
 })
-export class SectorListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['sectorName', 'maxRowsNumb', 'availableRowsNumb', 'maxSeatsNumb', 'availableSeatsNumb', 'actions'];
+export class SectorSelectionComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<Sector>();
   page: number = 0;
   size: number = 10;
   totalElements: number = 0;
-  arenaId!: number;
   isLoading: boolean = true;
+  arenaId!: number;
 
   @ViewChild(MatSort) sort!: MatSort;
-
-  filters = {
-    nameSortOrder: '',
-    maxRowsNumbSortOrder: '',
-    maxSeatsNumbSortOrder: ''
-  };
 
   filterConfig: FilterConfig[] = [
     { label: 'Name Sort Order', formControlName: 'nameSortOrder', type: 'select', options: [
@@ -69,7 +57,13 @@ export class SectorListComponent implements OnInit, AfterViewInit {
     ]}
   ];
 
-  constructor(private sectorService: SectorService, private router: Router, private route: ActivatedRoute) {}
+  filters = {
+    nameSortOrder: '',
+    maxRowsNumbSortOrder: '',
+    maxSeatsNumbSortOrder: ''
+  };
+
+  constructor(private sectorService: SectorService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -79,27 +73,31 @@ export class SectorListComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.sort.sortChange.subscribe(() => {
-      this.page = 0;
-      this.loadSectors();
-    });
-  }
+    if (this.sort) {
+      this.sort.sortChange.subscribe(() => {
+        this.page = 0;
+        this.loadSectors();
+      });
+    }
+    this.loadSectors();
+  }  
 
-  loadSectors(): void {
+  async loadSectors() {    
     this.isLoading = true;
+
     this.sectorService.getSectors(
       this.arenaId,
-      this.filters.nameSortOrder,
-      this.filters.maxRowsNumbSortOrder,
-      this.filters.maxSeatsNumbSortOrder,
-      this.page,
+      this.filters.nameSortOrder, 
+      this.filters.maxRowsNumbSortOrder, 
+      this.filters.maxSeatsNumbSortOrder, 
+      this.page, 
       this.size
     ).subscribe(data => {
       this.dataSource.data = data.content;
       this.totalElements = data.metadata.totalElements;
       this.isLoading = false;
     });
-  }
+  }  
 
   onFilterChanged(filters: any): void {
     this.filters = filters;
@@ -107,22 +105,12 @@ export class SectorListComponent implements OnInit, AfterViewInit {
     this.loadSectors();
   }
 
-  addSector(): void {
-    this.router.navigate(['/admin/sectors/list/new'], { queryParams: { arenaId: this.arenaId } });
-  }
-
-  editSector(sector: Sector): void {
-    this.router.navigate(['/admin/sectors/list/edit', sector.id], { queryParams: { arenaId: this.arenaId } });
-  }
-
-  deleteSector(id: number): void {
-    this.sectorService.deleteSector(id).subscribe(() => {
-      this.loadSectors();
-    });
+  selectSector(sectorId: number): void {
+    this.router.navigate(['/admin/rows/list'], { queryParams: { sectorId: sectorId, arenaId: this.arenaId } });
   }
 
   goBack(): void {
-    this.router.navigate(['/admin/sectors']);
+    this.router.navigate(['/admin/rows']);
   }  
 
   onPageChange(newPage: number): void {

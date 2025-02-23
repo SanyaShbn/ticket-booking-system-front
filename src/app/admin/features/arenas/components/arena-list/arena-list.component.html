@@ -4,9 +4,10 @@
     <button mat-raised-button color="accent" (click)="addArena()" style="margin-left: 10px;">Add New Arena</button>
 </mat-toolbar>
 
-<app-arena-filter (filterChanged)="onFilterChanged($event)"></app-arena-filter>
+<app-filter [filterConfig]="filterConfig" (filterChanged)="onFilterChanged($event)"></app-filter>
   
   <div class="mat-elevation-z8">
+
     <mat-table [dataSource]="dataSource" matSort (matSortChange)="loadArenas()">
       <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
@@ -42,7 +43,14 @@
   
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
     </mat-table>
+
+    <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="50" style="margin: 20px auto;"></mat-progress-spinner>
+
+    <div *ngIf="!isLoading && dataSource.data.length === 0">
+        <p style="display: flex; justify-content: center;">No data available</p>
+    </div>
   
     <app-paginator 
       [page]="page" 

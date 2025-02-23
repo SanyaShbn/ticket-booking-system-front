@@ -5,7 +5,7 @@
     <button mat-raised-button color="primary" (click)="goBack()" style="margin-left: 10px;">Back to Arena Selection</button>
 </mat-toolbar>
 
-<app-sector-filter (filterChanged)="onFilterChanged($event)"></app-sector-filter>
+<app-filter [filterConfig]="filterConfig" (filterChanged)="onFilterChanged($event)"></app-filter>
 
 <div class="mat-elevation-z8">
     <mat-table [dataSource]="dataSource" matSort>
@@ -49,6 +49,12 @@
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
+
+    <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="50" style="margin: 20px auto;"></mat-progress-spinner>
+
+    <div style="display: flex; justify-content: center;" *ngIf="!isLoading && dataSource.data.length === 0">
+        <p>No data available</p>
+    </div>
   
     <app-paginator 
       [page]="page" 

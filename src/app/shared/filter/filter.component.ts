@@ -1,16 +1,23 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { NgIf } from '@angular/common';
+import { NgIf, NgFor } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 
+export interface FilterConfig {
+  label: string;
+  formControlName: string;
+  type: 'input' | 'select';
+  options?: { value: string; viewValue: string }[];
+}
+
 @Component({
-  selector: 'app-arena-filter',
-  templateUrl: './arena-filter.component.html',
-  styleUrls: ['./arena-filter.component.scss'],
+  selector: 'app-filter',
+  templateUrl: './filter.component.html',
+  styleUrls: ['./filter.component.scss'],
   imports: [
     ReactiveFormsModule,
     NgIf,
@@ -18,20 +25,24 @@ import { MatOptionModule } from '@angular/material/core';
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
-    MatOptionModule
+    MatOptionModule,
+    NgFor
   ]
 })
-export class ArenaFilterComponent {
+export class FilterComponent {
+  @Input() filterConfig: FilterConfig[] = [];
   filterForm: FormGroup;
   showFilterForm: boolean = false;
 
   @Output() filterChanged = new EventEmitter<any>();
 
   constructor(private fb: FormBuilder) {
-    this.filterForm = this.fb.group({
-      city: [''],
-      capacitySortOrder: [''],
-      seatsNumbSortOrder: [''],
+    this.filterForm = this.fb.group({});
+  }
+
+  ngOnChanges(): void {
+    this.filterConfig.forEach(config => {
+      this.filterForm.addControl(config.formControlName, this.fb.control(''));
     });
   }
 
@@ -40,11 +51,7 @@ export class ArenaFilterComponent {
   }
 
   resetFilter(): void {
-    this.filterForm.reset({
-      city: '',
-      capacitySortOrder: '',
-      seatsNumbSortOrder: ''
-    });
+    this.filterForm.reset(this.filterConfig.reduce((acc, config) => ({ ...acc, [config.formControlName]: '' }), {}));
     this.applyFilter();
   }
 

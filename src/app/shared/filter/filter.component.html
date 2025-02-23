@@ -1,0 +1,22 @@
+<button mat-raised-button type="button" (click)="toggleFilterForm()" style="margin: 5px;">
+    {{ showFilterForm ? 'Hide Filter' : 'Show Filter' }}
+</button>
+
+<div *ngIf="showFilterForm" class="filter-form">
+  <form [formGroup]="filterForm" (ngSubmit)="applyFilter()">
+    <ng-container *ngFor="let config of filterConfig">
+      <mat-form-field *ngIf="config.type === 'input'">
+        <mat-label>{{ config.label }}</mat-label>
+        <input matInput [formControlName]="config.formControlName">
+      </mat-form-field>
+      <mat-form-field *ngIf="config.type === 'select'">
+        <mat-label>{{ config.label }}</mat-label>
+        <mat-select [formControlName]="config.formControlName">
+          <mat-option *ngFor="let option of config.options" [value]="option.value">{{ option.viewValue }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+    <button mat-raised-button color="primary" type="submit">Apply Filters</button>
+    <button mat-button type="button" (click)="resetFilter()">Reset Filters</button>
+  </form>  
+</div>  

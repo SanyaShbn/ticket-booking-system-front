@@ -6,6 +6,9 @@ import { AdminLayoutComponent } from './admin/admin-layout/admin-layout.componen
 import { SectorListComponent } from './admin/features/sectors/components/sector-list/sector-list.component';
 import { SectorFormComponent } from './admin/features/sectors/components/sector-form/sector-form.component';
 import { ArenaSelectionComponent } from './admin/features/arenas/components/arena-selection/arena-selection.component';
+import { SectorSelectionComponent } from './admin/features/sectors/components/sector-selection/sector-selection.component';
+import { RowListComponent } from './admin/features/rows/components/row-list/row-list.component';
+import { RowFormComponent } from './admin/features/rows/components/row-form/row-form.component';
 
 export const routes: Routes = [
   {
@@ -19,6 +22,11 @@ export const routes: Routes = [
       { path: 'sectors/list', component: SectorListComponent },
       { path: 'sectors/list/new', component: SectorFormComponent },
       { path: 'sectors/list/edit/:id', component: SectorFormComponent },
+      { path: 'rows', component: ArenaSelectionComponent, data: { navigateTo: '/admin/rows/sector-select' } },
+      { path: 'rows/sector-select', component: SectorSelectionComponent },
+      { path: 'rows/list', component: RowListComponent },
+      { path: 'rows/list/new', component: RowFormComponent },
+      { path: 'rows/list/edit/:id', component: RowFormComponent },
     ]
   },
   { path: '', redirectTo: '/admin', pathMatch: 'full' }

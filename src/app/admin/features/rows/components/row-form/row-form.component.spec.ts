@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SectorFilterComponent } from './sector-filter.component';
+import { RowFormComponent } from './row-form.component';
 
-describe('SectorFilterComponent', () => {
-  let component: SectorFilterComponent;
-  let fixture: ComponentFixture<SectorFilterComponent>;
+describe('RowFormComponent', () => {
+  let component: RowFormComponent;
+  let fixture: ComponentFixture<RowFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SectorFilterComponent]
+      imports: [RowFormComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SectorFilterComponent);
+    fixture = TestBed.createComponent(RowFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

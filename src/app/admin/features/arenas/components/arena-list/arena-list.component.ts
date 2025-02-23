@@ -13,8 +13,10 @@ import { MatSortModule } from '@angular/material/sort';
 import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ArenaFilterComponent } from '../arena-filter/arena-filter.component';
 import { PaginatorComponent } from '../../../../../shared/paginator/paginator.component';
+import { NgIf } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component'; 
 
 @Component({
   selector: 'app-arena-list',
@@ -30,8 +32,10 @@ import { PaginatorComponent } from '../../../../../shared/paginator/paginator.co
     MatSortModule,
     HttpClientModule,
     ReactiveFormsModule,
-    ArenaFilterComponent,
-    PaginatorComponent
+    PaginatorComponent,
+    NgIf,
+    MatProgressSpinnerModule,
+    FilterComponent
   ]
 })
 export class ArenaListComponent implements OnInit {
@@ -40,6 +44,7 @@ export class ArenaListComponent implements OnInit {
   page: number = 0;
   size: number = 10;
   totalElements: number = 0;
+  isLoading: boolean = true;
 
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -48,6 +53,20 @@ export class ArenaListComponent implements OnInit {
     capacitySortOrder: '',
     seatsNumbSortOrder: ''
   };
+
+  filterConfig: FilterConfig[] = [
+    { label: 'City', formControlName: 'city', type: 'input'},
+    { label: 'Capacity Sort Order', formControlName: 'capacitySortOrder', type: 'select', options: [
+      { value: '', viewValue: '-- Sorting --' },
+      { value: 'ASC', viewValue: 'Ascending' },
+      { value: 'DESC', viewValue: 'Descending' }
+    ]},
+    { label: 'Seats Number Sort Order', formControlName: 'seatsNumbSortOrder', type: 'select', options: [
+      { value: '', viewValue: '-- Sorting --' },
+      { value: 'ASC', viewValue: 'Ascending' },
+      { value: 'DESC', viewValue: 'Descending' }
+    ]}
+  ];
 
   constructor(private arenaService: ArenaService, private router: Router) { }
 
@@ -62,6 +81,8 @@ export class ArenaListComponent implements OnInit {
   }
 
   async loadArenas() {
+    this.isLoading = true;
+
     const sort = this.sort.active;
     const direction = this.sort.direction;
   
@@ -76,6 +97,7 @@ export class ArenaListComponent implements OnInit {
     ).subscribe(data => {
       this.dataSource.data = data.content;
       this.totalElements = data.metadata.totalElements;
+      this.isLoading = false;
     });
   }  
 

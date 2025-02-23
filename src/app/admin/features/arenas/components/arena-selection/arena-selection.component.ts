@@ -1,15 +1,17 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, Input } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { ArenaService } from '../../services/arena.service';
 import { Arena } from '../../models/arena.model';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute  } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ArenaFilterComponent } from '../arena-filter/arena-filter.component';
 import { PaginatorComponent } from '../../../../../shared/paginator/paginator.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
+import { NgIf } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component'; 
 
 @Component({
   selector: 'app-arena-selection',
@@ -19,20 +21,38 @@ import { CommonModule } from '@angular/common';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    ArenaFilterComponent,
+    FilterComponent,
     PaginatorComponent,
     MatCardModule,
-    MatButtonModule
+    MatButtonModule,
+    NgIf,
+    MatProgressSpinnerModule
   ]
 })
 export class ArenaSelectionComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['name', 'city', 'capacity', 'generalSeatsNumb', 'actions'];
+  @Input() navigateTo: string = '/admin/sectors/list';
+  
   dataSource = new MatTableDataSource<Arena>();
   page: number = 0;
   size: number = 10;
   totalElements: number = 0;
+  isLoading: boolean = true;
 
   @ViewChild(MatSort) sort!: MatSort;
+
+  filterConfig: FilterConfig[] = [
+      { label: 'City', formControlName: 'city', type: 'input'},
+      { label: 'Capacity Sort Order', formControlName: 'capacitySortOrder', type: 'select', options: [
+        { value: '', viewValue: '-- Sorting --' },
+        { value: 'ASC', viewValue: 'Ascending' },
+        { value: 'DESC', viewValue: 'Descending' }
+      ]},
+      { label: 'Seats Number Sort Order', formControlName: 'seatsNumbSortOrder', type: 'select', options: [
+        { value: '', viewValue: '-- Sorting --' },
+        { value: 'ASC', viewValue: 'Ascending' },
+        { value: 'DESC', viewValue: 'Descending' }
+      ]}
+    ];
 
   filters = {
     city: '',
@@ -40,9 +60,13 @@ export class ArenaSelectionComponent implements OnInit, AfterViewInit {
     seatsNumbSortOrder: ''
   };
 
-  constructor(private arenaService: ArenaService, private router: Router) { }
+  constructor(private arenaService: ArenaService, private router: Router, private route: ActivatedRoute) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.route.data.subscribe(data => {
+      this.navigateTo = data['navigateTo'] || this.navigateTo;
+    });
+  }
 
   ngAfterViewInit(): void {
     if (this.sort) {
@@ -54,7 +78,9 @@ export class ArenaSelectionComponent implements OnInit, AfterViewInit {
     this.loadArenas();
   }  
 
-  async loadArenas() {
+  async loadArenas() {    
+    this.isLoading = true;
+
     const sort = this.sort ? this.sort.active : '';
     const direction = this.sort ? this.sort.direction : '';
 
@@ -69,6 +95,7 @@ export class ArenaSelectionComponent implements OnInit, AfterViewInit {
     ).subscribe(data => {
       this.dataSource.data = data.content;
       this.totalElements = data.metadata.totalElements;
+      this.isLoading = false;
     });
   }  
 
@@ -79,7 +106,7 @@ export class ArenaSelectionComponent implements OnInit, AfterViewInit {
   }
 
   selectArena(arenaId: number): void {
-    this.router.navigate(['/admin/sectors/list'], { queryParams: { arenaId: arenaId } });
+    this.router.navigate([this.navigateTo], { queryParams: { arenaId: arenaId } });
   }
 
   onPageChange(newPage: number): void {

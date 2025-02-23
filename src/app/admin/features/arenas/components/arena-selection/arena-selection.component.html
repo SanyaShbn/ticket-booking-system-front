@@ -1,9 +1,9 @@
 <div class="arena-selection">
     <h2>Select an Arena to View Its Sectors</h2>
     
-    <app-arena-filter (filterChanged)="onFilterChanged($event)"></app-arena-filter>
+    <app-filter [filterConfig]="filterConfig" (filterChanged)="onFilterChanged($event)"></app-filter>
   
-    <div class="arena-cards">
+    <div class="arena-cards" *ngIf="!isLoading && dataSource.data.length > 0">
       <mat-card *ngFor="let arena of dataSource.data" (click)="selectArena(arena.id)">
         <mat-card-title>{{ arena.name }}</mat-card-title>
         <mat-card-subtitle>{{ arena.city }}</mat-card-subtitle>
@@ -15,6 +15,12 @@
           <button mat-button>View Sectors</button>
         </mat-card-actions>
       </mat-card>
+    </div>
+
+    <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="100" style="margin: 20px auto;"></mat-progress-spinner>
+
+    <div *ngIf="!isLoading && dataSource.data.length === 0">
+        <p>No data available</p>
     </div>
   
     <app-paginator 

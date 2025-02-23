@@ -1,9 +1,8 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
-import { SectorService } from '../../services/sector.service';
-import { Sector } from '../../models/sector.model';
+import { RowService } from '../../services/row.service';
+import { Row } from '../../models/row.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { PaginatorComponent } from '../../../../../shared/paginator/paginator.component';
@@ -12,13 +11,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component'; 
 
 @Component({
-  selector: 'app-sector-list',
-  templateUrl: './sector-list.component.html',
-  styleUrls: ['./sector-list.component.scss'],
+  selector: 'app-row-list',
+  templateUrl: './row-list.component.html',
+  styleUrls: ['./row-list.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -34,64 +34,59 @@ import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filt
     MatProgressSpinnerModule
   ]
 })
-export class SectorListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['sectorName', 'maxRowsNumb', 'availableRowsNumb', 'maxSeatsNumb', 'availableSeatsNumb', 'actions'];
-  dataSource = new MatTableDataSource<Sector>();
+export class RowListComponent implements OnInit {
+  displayedColumns: string[] = ['rowNumber', 'seatsNumb', 'actions'];
+  dataSource = new MatTableDataSource<Row>();
   page: number = 0;
   size: number = 10;
   totalElements: number = 0;
+  sectorId!: number;
   arenaId!: number;
   isLoading: boolean = true;
 
   @ViewChild(MatSort) sort!: MatSort;
 
+  filterConfig: FilterConfig[] = [
+    { label: 'Row Number Sort Order', formControlName: 'rowNumberOrder', type: 'select', options: [
+      { value: '', viewValue: '-- Sorting --' },
+      { value: 'ASC', viewValue: 'Ascending' },
+      { value: 'DESC', viewValue: 'Descending' }
+    ]},
+    { label: 'Seats Number Sort Order', formControlName: 'seatsNumbOrder', type: 'select', options: [
+      { value: '', viewValue: '-- Sorting --' },
+      { value: 'ASC', viewValue: 'Ascending' },
+      { value: 'DESC', viewValue: 'Descending' }
+    ]},
+  ];
+  
   filters = {
-    nameSortOrder: '',
-    maxRowsNumbSortOrder: '',
-    maxSeatsNumbSortOrder: ''
+    rowNumberOrder: '',
+    seatsNumbOrder: ''
   };
 
-  filterConfig: FilterConfig[] = [
-    { label: 'Name Sort Order', formControlName: 'nameSortOrder', type: 'select', options: [
-      { value: '', viewValue: '-- Sorting --' },
-      { value: 'ASC', viewValue: 'Ascending' },
-      { value: 'DESC', viewValue: 'Descending' }
-    ]},
-    { label: 'Max Rows Number Sort Order', formControlName: 'maxRowsNumbSortOrder', type: 'select', options: [
-      { value: '', viewValue: '-- Sorting --' },
-      { value: 'ASC', viewValue: 'Ascending' },
-      { value: 'DESC', viewValue: 'Descending' }
-    ]},
-    { label: 'Max Seats Number Sort Order', formControlName: 'maxSeatsNumbSortOrder', type: 'select', options: [
-      { value: '', viewValue: '-- Sorting --' },
-      { value: 'ASC', viewValue: 'Ascending' },
-      { value: 'DESC', viewValue: 'Descending' }
-    ]}
-  ];
-
-  constructor(private sectorService: SectorService, private router: Router, private route: ActivatedRoute) {}
+  constructor(private rowService: RowService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
+      this.sectorId = +params['sectorId'] || 0;
       this.arenaId = +params['arenaId'] || 0;
-      this.loadSectors();
+      this.loadRows();
     });
   }
 
   ngAfterViewInit(): void {
     this.sort.sortChange.subscribe(() => {
       this.page = 0;
-      this.loadSectors();
+      this.loadRows();
     });
   }
 
-  loadSectors(): void {
+  async loadRows() {
     this.isLoading = true;
-    this.sectorService.getSectors(
-      this.arenaId,
-      this.filters.nameSortOrder,
-      this.filters.maxRowsNumbSortOrder,
-      this.filters.maxSeatsNumbSortOrder,
+    this.rowService.getRows(
+      this.sectorId,
+      this.filters.rowNumberOrder,
+      this.filters.seatsNumbOrder,
       this.page,
       this.size
     ).subscribe(data => {
@@ -104,35 +99,35 @@ export class SectorListComponent implements OnInit, AfterViewInit {
   onFilterChanged(filters: any): void {
     this.filters = filters;
     this.page = 0;
-    this.loadSectors();
+    this.loadRows();
   }
 
-  addSector(): void {
-    this.router.navigate(['/admin/sectors/list/new'], { queryParams: { arenaId: this.arenaId } });
+  addRow(): void {
+    this.router.navigate(['/admin/rows/list/new'], { queryParams: { sectorId: this.sectorId, arenaId: this.arenaId } });
   }
 
-  editSector(sector: Sector): void {
-    this.router.navigate(['/admin/sectors/list/edit', sector.id], { queryParams: { arenaId: this.arenaId } });
+  editRow(row: Row): void {
+    this.router.navigate(['/admin/rows/list/edit', row.id], { queryParams: { sectorId: this.sectorId, arenaId: this.arenaId } });
   }
 
-  deleteSector(id: number): void {
-    this.sectorService.deleteSector(id).subscribe(() => {
-      this.loadSectors();
+  deleteRow(id: number): void {
+    this.rowService.deleteRow(id).subscribe(() => {
+      this.loadRows();
     });
   }
 
   goBack(): void {
-    this.router.navigate(['/admin/sectors']);
+    this.router.navigate(['/admin/rows/sector-select'], { queryParams: { arenaId: this.arenaId } });
   }  
 
   onPageChange(newPage: number): void {
     this.page = newPage;
-    this.loadSectors();
+    this.loadRows();
   }
 
   onSizeChange(newSize: number): void {
     this.size = newSize;
     this.page = 0;
-    this.loadSectors();
+    this.loadRows();
   }
 }
