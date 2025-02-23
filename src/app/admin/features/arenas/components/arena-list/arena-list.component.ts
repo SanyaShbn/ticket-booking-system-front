@@ -14,7 +14,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ArenaFilterComponent } from '../arena-filter/arena-filter.component';
-import { PaginatorComponent } from '../../../../shared/paginator/paginator.component';
+import { PaginatorComponent } from '../../../../../shared/paginator/paginator.component';
 
 @Component({
   selector: 'app-arena-list',
@@ -86,11 +86,11 @@ export class ArenaListComponent implements OnInit {
   }
 
   addArena(): void {
-    this.router.navigate(['/arenas/new']);
+    this.router.navigate(['/admin/arenas/new']);
   }
 
   editArena(arena: Arena): void {
-    this.router.navigate(['/arenas/edit', arena.id]);
+    this.router.navigate(['/admin/arenas/edit', arena.id]);
   }
 
   deleteArena(id: number): void {

@@ -12,6 +12,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
+import { AppRoutingModule } from './app.routes';
 
 @NgModule({
   imports: [
@@ -27,7 +28,8 @@ import { MatSortModule } from '@angular/material/sort';
     MatToolbarModule,
     MatCardModule,
     MatPaginatorModule,
-    MatSortModule
+    MatSortModule,
+    AppRoutingModule
   ],
   providers: []
 })

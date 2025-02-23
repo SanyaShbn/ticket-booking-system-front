@@ -1,0 +1,23 @@
+<mat-sidenav-container class="sidenav-container">
+    <mat-sidenav mode="side" [(opened)]="showMenu" class="sidenav">
+      <mat-nav-list>
+        <a mat-list-item routerLink="/admin/arenas" routerLinkActive="active">
+          <mat-icon>stadium</mat-icon>
+          <span>Arenas</span>
+        </a>
+        <!-- Другие сущности -->
+        <div class="logout">
+          <a mat-list-item>
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+          </a>
+        </div>
+      </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <button mat-icon-button (click)="toggleMenu()">
+        <mat-icon>{{ showMenu ? 'arrow_back' : 'menu' }}</mat-icon>
+      </button>
+      <ng-content></ng-content>
+    </mat-sidenav-content>
+</mat-sidenav-container>  

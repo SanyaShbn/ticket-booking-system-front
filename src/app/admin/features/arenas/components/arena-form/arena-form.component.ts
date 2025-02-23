@@ -59,17 +59,17 @@ export class ArenaFormComponent implements OnInit {
       const arena: Arena = this.arenaForm.value;
       if (this.arenaId) {
         this.arenaService.updateArena(this.arenaId, arena).subscribe(() => {
-          this.router.navigate(['/arenas']);
+          this.router.navigate(['/admin/arenas']);
         });
       } else {
         this.arenaService.createArena(arena).subscribe(() => {
-          this.router.navigate(['/arenas']);
+          this.router.navigate(['/admin/arenas']);
         });
       }
     }
   }
 
   cancel(): void {
-    this.router.navigate(['/arenas']);
+    this.router.navigate(['/admin/arenas']);
   }
 }
