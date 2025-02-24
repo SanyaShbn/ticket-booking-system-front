@@ -49,7 +49,7 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
   filterConfig: FilterConfig[] = [
     { label: 'Start Date', formControlName: 'startDate', type: 'date' },
     { label: 'End Date', formControlName: 'endDate', type: 'date' },
-    { label: 'Arena', formControlName: 'arenaId', type: 'select', options: [] },
+    { label: 'Arena', formControlName: 'arenaId', type: 'input' },
     { label: 'Date Sort Order', formControlName: 'sortOrder', type: 'select', options: [
       { value: '', viewValue: '-- Sorting --' },
       { value: 'ASC', viewValue: 'Ascending' },

@@ -70,7 +70,7 @@ export class SportEventFormComponent implements OnInit {
 
     this.arenas$ = this.eventForm.get('arena')!.valueChanges.pipe(
       startWith(''),
-      switchMap(value => this.arenaService.getArenasForSportEvents(0, 10, value).pipe(
+      switchMap(() => this.arenaService.getArenasForSportEvents(0, 10).pipe(
         map(response => response.content)
       ))
     );

@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SportEvent } from '../models/sport-event.model';
+import { environment } from '../../../../../config/environment'
 
 @Injectable({
   providedIn: 'root'
 })
 export class SportEventService {
-  private apiUrl = 'http://localhost:8080/api/admin/sport_events';
+  private apiUrl = environment.apiUrl + 'admin/sport_events';
 
   constructor(private http: HttpClient) { }
 

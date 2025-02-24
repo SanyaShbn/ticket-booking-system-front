@@ -2,18 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Arena } from '../models/arena.model';
+import { environment } from '../../../../../config/environment'
 
 @Injectable({
   providedIn: 'root'
 })
 export class ArenaService {
-  private apiUrl = 'http://localhost:8080/api/admin/arenas';
+  private apiUrl = environment.apiUrl + 'admin/arenas';
 
   constructor(private http: HttpClient) { }
-
-  // getAllArenas(): Observable<Arena[]> {
-  //   return this.http.get<Arena[]>(`${this.apiUrl}/all`);
-  // }
 
   getArenas(city: string, capacitySortOrder: string, seatsNumbSortOrder: string, page: number, size: number, 
     sort: string, direction: string): Observable<any> {
@@ -29,13 +26,10 @@ export class ArenaService {
     return this.http.get<any>(this.apiUrl, { params });
   }
 
-  getArenasForSportEvents(page: number, size: number, name?: string): Observable<any> {
+  getArenasForSportEvents(page: number, size: number): Observable<any> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-    if (name) {
-      params = params.set('name', name);
-    }
 
     return this.http.get<any>(`${this.apiUrl}/search`, { params });
   }

@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Sector } from '../models/sector.model';
+import { environment } from '../../../../../config/environment'
 
 @Injectable({
   providedIn: 'root'
 })
 export class SectorService {
-  private apiUrl = 'http://localhost:8080/api/admin/sectors';
+  private apiUrl = environment.apiUrl + 'admin/sectors';
 
   constructor(private http: HttpClient) { }
 
