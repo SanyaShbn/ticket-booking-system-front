@@ -9,6 +9,8 @@ import { ArenaSelectionComponent } from './admin/features/arenas/components/aren
 import { SectorSelectionComponent } from './admin/features/sectors/components/sector-selection/sector-selection.component';
 import { RowListComponent } from './admin/features/rows/components/row-list/row-list.component';
 import { RowFormComponent } from './admin/features/rows/components/row-form/row-form.component';
+import { SportEventListComponent } from './admin/features/sport-events/components/sport-event-list/sport-event-list.component';
+import { SportEventFormComponent } from './admin/features/sport-events/components/sport-event-form/sport-event-form.component';
 
 export const routes: Routes = [
   {
@@ -27,6 +29,9 @@ export const routes: Routes = [
       { path: 'rows/list', component: RowListComponent },
       { path: 'rows/list/new', component: RowFormComponent },
       { path: 'rows/list/edit/:id', component: RowFormComponent },
+      { path: 'sport-events', component: SportEventListComponent },
+      { path: 'sport-events/new', component: SportEventFormComponent },
+      { path: 'sport-events/edit/:id', component: SportEventFormComponent },
     ]
   },
   { path: '', redirectTo: '/admin', pathMatch: 'full' }

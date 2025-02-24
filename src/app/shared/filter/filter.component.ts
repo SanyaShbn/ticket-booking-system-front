@@ -6,11 +6,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 export interface FilterConfig {
   label: string;
   formControlName: string;
-  type: 'input' | 'select';
+  type: 'input' | 'select' | 'date';
   options?: { value: string; viewValue: string }[];
 }
 
@@ -26,7 +28,9 @@ export interface FilterConfig {
     MatSelectModule,
     MatInputModule,
     MatOptionModule,
-    NgFor
+    NgFor,
+    MatDatepickerModule,
+    MatNativeDateModule
   ]
 })
 export class FilterComponent {
@@ -47,7 +51,20 @@ export class FilterComponent {
   }
 
   applyFilter(): void {
-    this.filterChanged.emit(this.filterForm.value);
+    const rawValues = this.filterForm.value;
+    const filteredValues: { [key: string]: any } = Object.keys(rawValues).reduce((acc, key) => {
+      if (this.filterConfig.find(config => config.formControlName === key)?.type === 'date' && rawValues[key]) {
+        const date = new Date(rawValues[key]);
+        const isoString = date.toISOString();
+        const formattedDate = isoString.slice(0, 19);
+        acc[key] = formattedDate;
+      } else {
+        acc[key] = rawValues[key];
+      }
+      return acc;
+    }, {} as { [key: string]: any });
+  
+    this.filterChanged.emit(filteredValues);
   }
 
   resetFilter(): void {
