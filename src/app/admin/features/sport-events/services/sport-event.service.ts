@@ -12,13 +12,26 @@ export class SportEventService {
 
   constructor(private http: HttpClient) { }
 
-  getSportEvents(startDate: Date, endDate: Date, arenaId: number, sortOrder: string, page: number, size: number): Observable<any> {
+  getSportEvents(
+    startDate: Date | null,
+    endDate: Date | null,
+    arenaId: number,
+    sortOrder: string,
+    page: number,
+    size: number
+  ): Observable<any> {
     let params = new HttpParams()
-      .set('startDate', startDate.toISOString().slice(0, 19))
-      .set('endDate', endDate.toISOString().slice(0, 19))
       .set('sortOrder', sortOrder)
       .set('page', page.toString())
       .set('size', size.toString());
+
+      if (startDate) {
+        params = params.set('startDate', startDate.toISOString().slice(0, 19));
+      }
+
+      if (endDate) {
+        params = params.set('endDate', endDate.toISOString().slice(0, 19));
+      }
 
       if (arenaId != 0) {
         params = params.set('arenaId', arenaId.toString());
@@ -32,11 +45,32 @@ export class SportEventService {
   }
 
   createSportEvent(arenaId: number, sportEvent: SportEvent): Observable<SportEvent> {
-    return this.http.post<SportEvent>(`${this.apiUrl}?arenaId=${arenaId}`, sportEvent);
+    // return this.http.post<SportEvent>(`${this.apiUrl}?arenaId=${arenaId}`, sportEvent);
+    const formData: FormData = new FormData();
+    formData.append('arenaId', arenaId.toString());
+    formData.append('eventName', sportEvent.eventName);
+    formData.append('eventDateTime', sportEvent.eventDateTime.toISOString().slice(0, 19));
+
+    if (sportEvent.posterImageUrl) {
+        formData.append('imageFile', sportEvent.posterImageUrl);
+    }
+
+    return this.http.post<SportEvent>(this.apiUrl, formData);
   }
 
   updateSportEvent(arenaId: number, id: number, sportEvent: SportEvent): Observable<SportEvent> {
-    return this.http.put<SportEvent>(`${this.apiUrl}/${id}?arenaId=${arenaId}`, sportEvent);
+    // return this.http.put<SportEvent>(`${this.apiUrl}/${id}?arenaId=${arenaId}`, sportEvent);
+    const formData: FormData = new FormData();
+    formData.append('arenaId', arenaId.toString());
+    formData.append('eventName', sportEvent.eventName);
+    formData.append('eventDateTime', sportEvent.eventDateTime.toISOString().slice(0, 19));
+
+    if (sportEvent.posterImageUrl) {
+        formData.append('imageFile', sportEvent.posterImageUrl);
+    }
+
+    return this.http.put<SportEvent>(`${this.apiUrl}/${id}`, formData);
+
   }
 
   deleteSportEvent(id: number): Observable<{ message: string }> {

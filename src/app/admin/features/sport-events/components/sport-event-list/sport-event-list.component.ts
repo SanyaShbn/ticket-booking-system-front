@@ -37,7 +37,7 @@ import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filt
   ]
 })
 export class SportEventListComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['eventName', 'eventDateTime', 'arena', 'actions'];
+  displayedColumns: string[] = ['eventName', 'eventDateTime', 'arena', 'posterImage', 'actions'];
   dataSource = new MatTableDataSource<SportEvent>();
   page: number = 0;
   size: number = 10;
@@ -95,8 +95,8 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
   loadSportEvents(): void {
     this.isLoading = true;
 
-    const startDate = this.filters.startDate ? new Date(this.filters.startDate) : new Date(0);
-    const endDate = this.filters.endDate ? new Date(this.filters.endDate) : new Date();
+    const startDate = this.filters.startDate ? new Date(this.filters.startDate) : null;
+    const endDate = this.filters.endDate ? new Date(this.filters.endDate) : null;
 
     this.sportEventService.getSportEvents(
       startDate,
@@ -108,7 +108,8 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
     ).subscribe(data => {
       this.dataSource.data = data.content.map((event: any) => ({
       ...event,
-      arenaName: event.arena?.name || 'Unknown'
+      arenaName: event.arena?.name || 'Unknown',
+      posterImage: event.posterImageUrl
       }));
       this.totalElements = data.metadata.totalElements;
       this.isLoading = false;

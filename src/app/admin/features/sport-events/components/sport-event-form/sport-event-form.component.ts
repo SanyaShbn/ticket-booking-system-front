@@ -40,6 +40,7 @@ export class SportEventFormComponent implements OnInit {
   eventId!: number;
   arenaId!: number;
   arenas$: Observable<Arena[]> | undefined;
+  selectedArena: Arena | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -53,7 +54,8 @@ export class SportEventFormComponent implements OnInit {
     this.eventForm = this.fb.group({
       eventName: ['', Validators.required],
       eventDateTime: ['', Validators.required],
-      arena: ['', Validators.required]
+      arena: ['', Validators.required],
+      posterImage: [null]
     });
 
     this.route.queryParams.subscribe(params => {
@@ -88,27 +90,43 @@ export class SportEventFormComponent implements OnInit {
       return;
     }
 
+    const formValue = this.eventForm.value;
+    const file: File = formValue.posterImage;
+
     const event: SportEvent = {
-      ...this.eventForm.value,
-      arenaId: this.arenaId
+      ...formValue,
+      arenaId: this.selectedArena?.id || 0,
+      posterImageUrl: file
     };
 
     if (this.isEditMode) {
       this.sportEventService.updateSportEvent(this.arenaId, this.eventId, event).subscribe(() => {
-        this.router.navigate(['/admin/sport-events'], { queryParams: { arenaId: this.arenaId } });
+        this.router.navigate(['/admin/sport-events']);
       });
     } else {
       this.sportEventService.createSportEvent(this.arenaId, event).subscribe(() => {
-        this.router.navigate(['/admin/sport-events'], { queryParams: { arenaId: this.arenaId } });
+        this.router.navigate(['/admin/sport-events']);
       });
     }
   }
 
   onCancel(): void {
-    this.router.navigate(['/admin/sport-events'], { queryParams: { arenaId: this.arenaId } });
+    this.router.navigate(['/admin/sport-events']);
   }
 
   displayArenaFn(arena: Arena): string {
     return arena && arena.name ? arena.name : '';
   }
+  
+  onFileChange(event: any): void {
+    const file = event.target.files[0];
+    console.log('Selected file:', file);
+    this.eventForm.patchValue({ posterImage: file })
+  }
+
+  onArenaSelected(selectedArena: Arena): void {
+    this.selectedArena = selectedArena;
+    this.arenaId = selectedArena.id;
+  }
+
 }

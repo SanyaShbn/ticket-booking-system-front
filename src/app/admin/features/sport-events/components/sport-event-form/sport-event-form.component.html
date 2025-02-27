@@ -17,13 +17,18 @@
     <mat-form-field appearance="fill">
       <mat-label>Arena</mat-label>
       <input type="text" matInput [formControlName]="'arena'" [matAutocomplete]="auto" required>
-      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayArenaFn">
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayArenaFn" (optionSelected)="onArenaSelected($event.option.value)">
         <mat-option *ngFor="let arena of arenas$ | async" [value]="arena">
           {{ arena.name }}
         </mat-option>
       </mat-autocomplete>
       <mat-error *ngIf="eventForm.get('arena')?.hasError('required')">Arena is required</mat-error>
     </mat-form-field>
+
+    <div>
+      <label>Upload Poster</label>
+      <input type="file" (change)="onFileChange($event)" />
+    </div>
 
     <div class="form-buttons">
       <button mat-raised-button color="primary" type="submit" [disabled]="eventForm.invalid">
