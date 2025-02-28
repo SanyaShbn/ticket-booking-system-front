@@ -51,8 +51,8 @@ export class SportEventService {
     formData.append('eventName', sportEvent.eventName);
     formData.append('eventDateTime', sportEvent.eventDateTime.toISOString().slice(0, 19));
 
-    if (sportEvent.posterImageUrl) {
-        formData.append('imageFile', sportEvent.posterImageUrl);
+    if (sportEvent.posterImage) {
+        formData.append('imageFile', sportEvent.posterImage);
     }
 
     return this.http.post<SportEvent>(this.apiUrl, formData);
@@ -65,8 +65,8 @@ export class SportEventService {
     formData.append('eventName', sportEvent.eventName);
     formData.append('eventDateTime', sportEvent.eventDateTime.toISOString().slice(0, 19));
 
-    if (sportEvent.posterImageUrl) {
-        formData.append('imageFile', sportEvent.posterImageUrl);
+    if (sportEvent.posterImage) {
+        formData.append('imageFile', sportEvent.posterImage);
     }
 
     return this.http.put<SportEvent>(`${this.apiUrl}/${id}`, formData);
@@ -75,5 +75,9 @@ export class SportEventService {
 
   deleteSportEvent(id: number): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`);
+  }
+
+  getPosterImage(filename: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/poster/${filename}`, { responseType: 'blob' });
   }
 }

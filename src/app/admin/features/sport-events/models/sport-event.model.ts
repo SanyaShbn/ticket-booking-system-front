@@ -3,5 +3,5 @@ export interface SportEvent {
     eventName: string;
     eventDateTime: Date;
     arenaId: number;
-    posterImageUrl?: string;
+    posterImage?: string;
 }  

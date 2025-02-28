@@ -26,7 +26,7 @@
       <ng-container matColumnDef="posterImage">
         <mat-header-cell *matHeaderCellDef>Poster</mat-header-cell>
         <mat-cell *matCellDef="let event">
-          <img *ngIf="event.posterImageUrl" [src]="event.posterImageUrl" alt="Poster" width="100">
+          <img *ngIf="getPosterImage(event.posterImage) | async as posterUrl" [src]="posterUrl" alt="Poster" width="50">
         </mat-cell>
       </ng-container>
   

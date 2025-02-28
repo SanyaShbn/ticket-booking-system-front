@@ -16,6 +16,9 @@ import { CommonModule } from '@angular/common';
 import { NgIf } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { Observable, of } from 'rxjs';
+import { catchError, map, switchMap  } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sport-event-list',
@@ -43,6 +46,7 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
   size: number = 10;
   totalElements: number = 0;
   isLoading: boolean = true;
+  imageCache: { [key: string]: Observable<SafeUrl | null> } = {};
 
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -68,6 +72,7 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
     private sportEventService: SportEventService, 
     private arenaService: ArenaService,
     private router: Router, 
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -108,8 +113,7 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
     ).subscribe(data => {
       this.dataSource.data = data.content.map((event: any) => ({
       ...event,
-      arenaName: event.arena?.name || 'Unknown',
-      posterImage: event.posterImageUrl
+      arenaName: event.arena?.name || 'Unknown'
       }));
       this.totalElements = data.metadata.totalElements;
       this.isLoading = false;
@@ -135,6 +139,29 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
       this.loadSportEvents();
     });
   }
+
+  getPosterImage(filename: string): Observable<SafeUrl | null> {
+    if (!filename || filename.trim() === '') {
+      return of(null);
+    }
+    if (this.imageCache[filename]) {
+        return this.imageCache[filename];
+    }
+    this.imageCache[filename] = this.sportEventService.getPosterImage(filename).pipe(
+        switchMap(data => {
+          const contentType = data.type;
+          return data.arrayBuffer().then(buffer => {
+              const objectURL = URL.createObjectURL(new Blob([buffer], { type: contentType }));
+              return this.sanitizer.bypassSecurityTrustUrl(objectURL);
+          });
+        }),
+        catchError(() => {
+            console.error(`Error loading poster image for file ${filename}`);
+            return of(null);
+        })
+    );
+    return this.imageCache[filename];
+ }
 
   onPageChange(newPage: number): void {
     this.page = newPage;
