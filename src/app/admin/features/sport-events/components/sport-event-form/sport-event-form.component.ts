@@ -16,6 +16,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Observable } from 'rxjs';
 import { startWith, map, switchMap } from 'rxjs/operators';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-sport-event-form',
@@ -41,13 +42,15 @@ export class SportEventFormComponent implements OnInit {
   arenaId!: number;
   arenas$: Observable<Arena[]> | undefined;
   selectedArena: Arena | null = null;
+  posterImage$: Observable<SafeUrl | null> | undefined;
 
   constructor(
     private fb: FormBuilder,
     private sportEventService: SportEventService,
     private arenaService: ArenaService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -81,7 +84,20 @@ export class SportEventFormComponent implements OnInit {
   loadEvent(): void {
     this.sportEventService.getSportEvent(this.eventId).subscribe(event => {
       this.eventForm.patchValue(event);
-      this.arenaId = event.arenaId;
+      // this.arenaId = event.arenaId;
+      this.arenaId = this.isEditMode ? this.eventForm.value.arena.id : event.arenaId;
+      if (event.posterImage) {
+        this.posterImage$ = this.sportEventService.getPosterImage(event.posterImage).pipe(
+          switchMap((data: Blob) => data.arrayBuffer().then(buffer => ({
+            buffer,
+            type: data.type
+          }))),
+          map(({ buffer, type }) => {
+            const objectURL = URL.createObjectURL(new Blob([buffer], { type }));
+            return this.sanitizer.bypassSecurityTrustUrl(objectURL);
+          })
+        );
+      }
     });
   }
 
@@ -91,18 +107,23 @@ export class SportEventFormComponent implements OnInit {
     }
 
     const formValue = this.eventForm.value;
-    const file: File = formValue.posterImage;
+    const file: File | null = formValue.posterImage instanceof File ? formValue.posterImage : null;
+
+    const eventDateTime = typeof formValue.eventDateTime === 'string'
+        ? new Date(formValue.eventDateTime)
+        : formValue.eventDateTime;
 
     const event: SportEvent = {
       ...formValue,
       arenaId: this.selectedArena?.id || 0,
-      posterImageUrl: file
+      posterImage: file,
+      eventDateTime
     };
 
     if (this.isEditMode) {
       this.sportEventService.updateSportEvent(this.arenaId, this.eventId, event).subscribe(() => {
         this.router.navigate(['/admin/sport-events']);
-      });
+    });
     } else {
       this.sportEventService.createSportEvent(this.arenaId, event).subscribe(() => {
         this.router.navigate(['/admin/sport-events']);
@@ -120,7 +141,6 @@ export class SportEventFormComponent implements OnInit {
   
   onFileChange(event: any): void {
     const file = event.target.files[0];
-    console.log('Selected file:', file);
     this.eventForm.patchValue({ posterImage: file })
   }
 

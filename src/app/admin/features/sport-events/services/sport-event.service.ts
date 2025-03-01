@@ -45,7 +45,6 @@ export class SportEventService {
   }
 
   createSportEvent(arenaId: number, sportEvent: SportEvent): Observable<SportEvent> {
-    // return this.http.post<SportEvent>(`${this.apiUrl}?arenaId=${arenaId}`, sportEvent);
     const formData: FormData = new FormData();
     formData.append('arenaId', arenaId.toString());
     formData.append('eventName', sportEvent.eventName);
@@ -59,7 +58,6 @@ export class SportEventService {
   }
 
   updateSportEvent(arenaId: number, id: number, sportEvent: SportEvent): Observable<SportEvent> {
-    // return this.http.put<SportEvent>(`${this.apiUrl}/${id}?arenaId=${arenaId}`, sportEvent);
     const formData: FormData = new FormData();
     formData.append('arenaId', arenaId.toString());
     formData.append('eventName', sportEvent.eventName);

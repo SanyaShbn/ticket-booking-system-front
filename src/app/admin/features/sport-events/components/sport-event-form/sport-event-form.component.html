@@ -25,6 +25,10 @@
       <mat-error *ngIf="eventForm.get('arena')?.hasError('required')">Arena is required</mat-error>
     </mat-form-field>
 
+    <div *ngIf="isEditMode && posterImage$">
+      <img *ngIf="posterImage$ | async as posterUrl" [src]="posterUrl" alt="Poster" width="100">
+    </div>
+
     <div>
       <label>Upload Poster</label>
       <input type="file" (change)="onFileChange($event)" />

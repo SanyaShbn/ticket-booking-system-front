@@ -18,7 +18,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Observable, of } from 'rxjs';
-import { catchError, map, switchMap  } from 'rxjs/operators';
+import { catchError, switchMap  } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sport-event-list',
