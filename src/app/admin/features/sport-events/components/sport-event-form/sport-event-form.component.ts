@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject  } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SportEventService } from '../../services/sport-event.service';
@@ -15,8 +15,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Observable } from 'rxjs';
-import { startWith, map, switchMap } from 'rxjs/operators';
+import { startWith, map, switchMap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { MatDialogModule, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-sport-event-form',
@@ -32,7 +33,8 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
     MatDatepickerModule,
     MatNativeDateModule,
     MatCardModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatDialogModule
   ]
 })
 export class SportEventFormComponent implements OnInit {
@@ -43,6 +45,8 @@ export class SportEventFormComponent implements OnInit {
   arenas$: Observable<Arena[]> | undefined;
   selectedArena: Arena | null = null;
   posterImage$: Observable<SafeUrl | null> | undefined;
+  page: number = 0;
+  totalPages: number = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -50,7 +54,8 @@ export class SportEventFormComponent implements OnInit {
     private arenaService: ArenaService,
     private router: Router,
     private route: ActivatedRoute,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -73,18 +78,36 @@ export class SportEventFormComponent implements OnInit {
       }
     });
 
-    this.arenas$ = this.eventForm.get('arena')!.valueChanges.pipe(
-      startWith(''),
-      switchMap(() => this.arenaService.getArenasForSportEvents(0, 10).pipe(
-        map(response => response.content)
-      ))
-    );
+    const arenaControl = this.eventForm.get('arena');
+    if (arenaControl) {
+      this.arenas$ = arenaControl.valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap(value => 
+          typeof value === 'string'
+            ? this.arenaService.getArenasForSportEvents(this.page, 5).pipe(
+                map(response => {
+                  this.totalPages = response.totalPages;
+                  return response.content.filter((arena: Arena) => 
+                    arena.name.toLowerCase().includes(value.toLowerCase())
+                  );
+                })
+              )
+            : this.arenaService.getArenasForSportEvents(this.page, 5).pipe(
+                map(response => {
+                  this.totalPages = response.totalPages;
+                  return response.content;
+                })
+              )
+        )
+      );
+    }
   }
 
   loadEvent(): void {
     this.sportEventService.getSportEvent(this.eventId).subscribe(event => {
       this.eventForm.patchValue(event);
-      // this.arenaId = event.arenaId;
       this.arenaId = this.isEditMode ? this.eventForm.value.arena.id : event.arenaId;
       if (event.posterImage) {
         this.posterImage$ = this.sportEventService.getPosterImage(event.posterImage).pipe(
@@ -142,6 +165,11 @@ export class SportEventFormComponent implements OnInit {
   onFileChange(event: any): void {
     const file = event.target.files[0];
     this.eventForm.patchValue({ posterImage: file })
+
+    const fileNameSpan = event.target.nextElementSibling.nextElementSibling;
+    if (fileNameSpan && file) {
+      fileNameSpan.textContent = file.name;
+    }
   }
 
   onArenaSelected(selectedArena: Arena): void {
@@ -149,4 +177,97 @@ export class SportEventFormComponent implements OnInit {
     this.arenaId = selectedArena.id;
   }
 
+  confirmDeletePoster(): void {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '250px',
+      data: { message: 'Are you sure you want to delete the poster image?' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deletePosterImage();
+      }
+    });
+  }
+
+  deletePosterImage(): void {
+    if (this.eventId && this.isEditMode) {
+      this.sportEventService.getSportEvent(this.eventId).subscribe(event => {
+        if (event.posterImage) {
+          this.sportEventService.deletePosterImage(event.posterImage).subscribe(() => {
+            this.posterImage$ = undefined;
+            this.eventForm.patchValue({ posterImage: null });
+          });
+        }
+      });
+    }
+  }
+
+  // onPageChange(newPage: number): void {
+  //   this.page = newPage;
+  //   this.arenas$ = this.eventForm.get('arena')!.valueChanges.pipe(
+  //     startWith(''),
+  //     debounceTime(300),
+  //     distinctUntilChanged(),
+  //     switchMap(value => 
+  //       typeof value === 'string'
+  //       ? this.arenaService.getArenasForSportEvents(this.page, 5).pipe(
+  //           map(arenas => arenas.filter((arena: Arena) => 
+  //             arena.name.toLowerCase().includes(value.toLowerCase())
+  //           ))
+  //         )
+  //       : this.arenaService.getArenasForSportEvents(this.page, 5)
+  //     )
+  //   );
+  // }
+
+  onPageChange(newPage: number): void {
+    if (newPage >= 0 && newPage < this.totalPages) {
+      this.page = newPage;
+
+      this.arenas$ = this.arenaService.getArenasForSportEvents(this.page, 5).pipe(
+        map(response => {
+          this.totalPages = response.totalPages;
+          return response.content;
+        })
+      );
+
+      const arenaControl = this.eventForm.get('arena');
+      if (arenaControl) {
+        arenaControl.setValue(arenaControl.value);
+      }
+    }
+  }  
+
+}
+
+// Компонент подтверждающего диалога
+@Component({
+  selector: 'confirm-dialog',
+  imports: [
+    MatButtonModule,
+    MatDialogModule
+  ],
+  template: `
+    <h1 mat-dialog-title>Confirmation</h1>
+    <div mat-dialog-content>{{data.message}}</div>
+    <div mat-dialog-actions>
+      <button mat-button (click)="onNoClick()">No</button>
+      <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Yes</button>
+    </div>
+  `,
+})
+export class ConfirmDialog {
+  constructor(
+    public dialogRef: MatDialogRef<ConfirmDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData
+  ) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+}
+
+interface DialogData {
+  message: string;
 }

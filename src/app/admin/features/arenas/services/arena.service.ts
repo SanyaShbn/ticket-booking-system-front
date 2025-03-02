@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Arena } from '../models/arena.model';
-import { environment } from '../../../../../config/environment'
+import { environment } from '../../../../../config/environment';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +32,16 @@ export class ArenaService {
       .set('page', page.toString())
       .set('size', size.toString());
 
-    return this.http.get<any>(`${this.apiUrl}/search`, { params });
+      return this.http.get<any>(`${this.apiUrl}/search`, { params }).pipe(
+        map(response => ({
+          content: response.content,
+          totalPages: Math.ceil(response.metadata.totalElements / size)
+        })),
+        catchError(() => {
+          console.error('Error fetching arenas');
+          return of({ content: [], totalPages: 0 });
+        })
+      );
   }
 
   getArena(id: number): Observable<Arena> {

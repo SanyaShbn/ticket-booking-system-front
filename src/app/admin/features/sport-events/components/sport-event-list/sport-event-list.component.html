@@ -5,9 +5,16 @@
   </mat-toolbar>
   
   <app-filter [filterConfig]="filterConfig" (filterChanged)="onFilterChanged($event)"></app-filter>
+
+  <div class="view-switch">
+    <mat-button-toggle-group #group="matButtonToggleGroup" (change)="toggleViewMode($event)">
+      <mat-button-toggle value="list" checked>List View</mat-button-toggle>
+      <mat-button-toggle value="gallery">Gallery View</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>  
   
   <div class="mat-elevation-z8">
-    <mat-table [dataSource]="dataSource" matSort (matSortChange)="loadSportEvents()">
+    <mat-table *ngIf="viewMode === 'list'" [dataSource]="dataSource" matSort (matSortChange)="loadSportEvents()">
       <ng-container matColumnDef="eventName">
         <mat-header-cell *matHeaderCellDef>Event Name</mat-header-cell>
         <mat-cell *matCellDef="let event">{{ event.eventName }}</mat-cell>
@@ -26,7 +33,10 @@
       <ng-container matColumnDef="posterImage">
         <mat-header-cell *matHeaderCellDef>Poster</mat-header-cell>
         <mat-cell *matCellDef="let event">
-          <img *ngIf="getPosterImage(event.posterImage) | async as posterUrl" [src]="posterUrl" alt="Poster" width="50">
+          <ng-container *ngIf="event.posterImage; else noPoster">
+            <img *ngIf="getPosterImage(event.posterImage) | async as posterUrl" [src]="posterUrl" alt="Poster" width="50">
+          </ng-container>
+          <ng-template #noPoster>No poster uploaded</ng-template>
         </mat-cell>
       </ng-container>
   
@@ -45,6 +55,25 @@
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
+
+    <div *ngIf="viewMode === 'gallery'" class="sport-event-gallery">
+      <div class="event-cards" *ngIf="!isLoading && dataSource.data.length > 0">
+         <mat-card *ngFor="let event of dataSource.data" class="event-card">
+           <mat-card-title>{{ event.eventName }}</mat-card-title>
+           <mat-card-subtitle>{{ event.eventDateTime | date: 'short' }}</mat-card-subtitle>
+           <img *ngIf="getPosterImage(event.posterImage) | async as posterUrl" [src]="posterUrl" alt="Poster" class="image" 
+           (click)="openImageDialog(posterUrl)" width="200">
+           <mat-card-content>
+            <p>Arena: {{ event.arenaName }}</p>
+           </mat-card-content>
+           <mat-card-actions>
+             <button mat-button color="primary" (click)="editSportEvent(event)">Edit</button>
+             <button mat-button color="warn" (click)="deleteSportEvent(event.id)">Delete</button>
+             <button mat-button color="accent" (click)="downloadImage(event.posterImage)">Download poster image</button>
+           </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
   
     <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="50" style="margin: 20px auto;"></mat-progress-spinner>
   

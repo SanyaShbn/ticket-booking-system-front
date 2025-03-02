@@ -3,8 +3,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { SportEventService } from '../../services/sport-event.service';
 import { SportEvent } from '../../models/sport-event.model';
-import { ArenaService } from '../../../arenas/services/arena.service';
-import { Arena } from '../../../arenas/models/arena.model';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { PaginatorComponent } from '../../../../../shared/paginator/paginator.component';
@@ -12,13 +10,19 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
 import { NgIf } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component';
+import { MatDialog } from '@angular/material/dialog'
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Observable, of } from 'rxjs';
 import { catchError, switchMap  } from 'rxjs/operators';
+import { ImageDialogComponent } from '../image-dialog/image-dialog.component'
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-sport-event-list',
@@ -36,24 +40,27 @@ import { catchError, switchMap  } from 'rxjs/operators';
     MatIconModule,
     MatButtonModule,
     NgIf,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatButtonToggleModule,
+    MatCardModule
   ]
 })
 export class SportEventListComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['eventName', 'eventDateTime', 'arena', 'posterImage', 'actions'];
-  dataSource = new MatTableDataSource<SportEvent>();
+  dataSource = new MatTableDataSource<any>();
   page: number = 0;
   size: number = 10;
   totalElements: number = 0;
   isLoading: boolean = true;
   imageCache: { [key: string]: Observable<SafeUrl | null> } = {};
+  viewMode: 'list' | 'gallery' = 'list';
 
   @ViewChild(MatSort) sort!: MatSort;
 
   filterConfig: FilterConfig[] = [
     { label: 'Start Date', formControlName: 'startDate', type: 'date' },
     { label: 'End Date', formControlName: 'endDate', type: 'date' },
-    { label: 'Arena', formControlName: 'arenaId', type: 'input' },
+    { label: 'Arena', formControlName: 'arenaName', type: 'input' },
     { label: 'Date Sort Order', formControlName: 'sortOrder', type: 'select', options: [
       { value: '', viewValue: '-- Sorting --' },
       { value: 'ASC', viewValue: 'Ascending' },
@@ -64,20 +71,18 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
   filters = {
     startDate: '',
     endDate: '',
-    arenaId: '',
+    arenaName: '',
     sortOrder: ''
   };
 
   constructor(
     private sportEventService: SportEventService, 
-    private arenaService: ArenaService,
     private router: Router, 
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    public dialog: MatDialog
   ) {}
 
-  ngOnInit(): void {
-    this.loadArenas();
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.sort.sortChange.subscribe(() => {
@@ -86,16 +91,6 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
     });
     this.loadSportEvents();
   }  
-
-  loadArenas(): void {
-    this.arenaService.getArenasForSportEvents(0, 10).subscribe(data => {
-      const arenaOptions = data.content.map((arena: Arena) => ({
-        value: arena.id.toString(),
-        viewValue: arena.name
-      }));
-      this.filterConfig.find(config => config.formControlName === 'arenaId')!.options = arenaOptions;
-    });
-  }
 
   loadSportEvents(): void {
     this.isLoading = true;
@@ -106,7 +101,7 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
     this.sportEventService.getSportEvents(
       startDate,
       endDate,
-      this.filters.arenaId ? +this.filters.arenaId : 0,
+      this.filters.arenaName,
       this.filters.sortOrder,
       this.page,
       this.size
@@ -140,8 +135,8 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  getPosterImage(filename: string): Observable<SafeUrl | null> {
-    if (!filename || filename.trim() === '') {
+  getPosterImage(filename?: string): Observable<SafeUrl | null> {
+    if (!filename?.trim()) {
       return of(null);
     }
     if (this.imageCache[filename]) {
@@ -163,6 +158,19 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
     return this.imageCache[filename];
  }
 
+  downloadImage(imagePath: string): void {
+   this.sportEventService.getPosterImage(imagePath).forEach((data: Blob) => {
+     const blob = new Blob([data], { type: data.type });
+     saveAs(blob, imagePath.split('/').pop() || 'downloaded_image.jpg');
+   }).catch(error => {
+     console.error('Failed to download image:', error);
+   });
+ }
+
+  toggleViewMode(event: MatButtonToggleChange): void {
+    this.viewMode = event.value as 'list' | 'gallery';
+  }
+
   onPageChange(newPage: number): void {
     this.page = newPage;
     this.loadSportEvents();
@@ -172,5 +180,11 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
     this.size = newSize;
     this.page = 0;
     this.loadSportEvents();
+  }
+
+  openImageDialog(imageUrl: SafeUrl): void {
+    this.dialog.open(ImageDialogComponent, {
+      data: { imageUrl }
+    });
   }
 }

@@ -15,12 +15,13 @@ export class SportEventService {
   getSportEvents(
     startDate: Date | null,
     endDate: Date | null,
-    arenaId: number,
+    arenaName: string,
     sortOrder: string,
     page: number,
     size: number
   ): Observable<any> {
     let params = new HttpParams()
+      .set('arenaName', arenaName)
       .set('sortOrder', sortOrder)
       .set('page', page.toString())
       .set('size', size.toString());
@@ -31,10 +32,6 @@ export class SportEventService {
 
       if (endDate) {
         params = params.set('endDate', endDate.toISOString().slice(0, 19));
-      }
-
-      if (arenaId != 0) {
-        params = params.set('arenaId', arenaId.toString());
       }
 
     return this.http.get<any>(this.apiUrl, { params });
@@ -77,5 +74,9 @@ export class SportEventService {
 
   getPosterImage(filename: string): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/poster/${filename}`, { responseType: 'blob' });
+  }
+
+  deletePosterImage(filename: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/poster/${filename}`);
   }
 }
