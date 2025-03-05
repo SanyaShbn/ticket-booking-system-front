@@ -11,6 +11,9 @@ import { RowListComponent } from './admin/features/rows/components/row-list/row-
 import { RowFormComponent } from './admin/features/rows/components/row-form/row-form.component';
 import { SportEventListComponent } from './admin/features/sport-events/components/sport-event-list/sport-event-list.component';
 import { SportEventFormComponent } from './admin/features/sport-events/components/sport-event-form/sport-event-form.component';
+import { SportEventSelectionComponent } from './admin/features/sport-events/components/sport-event-selection/sport-event-selection.component';
+import { TicketListComponent } from './admin/features/tickets/components/ticket-list/ticket-list.component';
+import { TicketFormComponent } from './admin/features/tickets/components/ticket-form/ticket-form.component';
 
 export const routes: Routes = [
   {
@@ -32,6 +35,10 @@ export const routes: Routes = [
       { path: 'sport-events', component: SportEventListComponent },
       { path: 'sport-events/new', component: SportEventFormComponent },
       { path: 'sport-events/edit/:id', component: SportEventFormComponent },
+      { path: 'tickets', component: SportEventSelectionComponent },
+      { path: 'tickets/list', component: TicketListComponent },
+      { path: 'tickets/list/new', component: TicketFormComponent },
+      { path: 'tickets/list/edit/:id', component: TicketFormComponent },
     ]
   },
   { path: '', redirectTo: '/admin', pathMatch: 'full' }

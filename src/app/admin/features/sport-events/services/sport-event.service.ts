@@ -45,7 +45,9 @@ export class SportEventService {
     const formData: FormData = new FormData();
     formData.append('arenaId', arenaId.toString());
     formData.append('eventName', sportEvent.eventName);
-    formData.append('eventDateTime', sportEvent.eventDateTime.toISOString().slice(0, 19));
+
+    const localDateTime = new Date(sportEvent.eventDateTime.getTime() - sportEvent.eventDateTime.getTimezoneOffset() * 60000);
+    formData.append('eventDateTime', localDateTime.toISOString().slice(0, 19));
 
     if (sportEvent.posterImage) {
         formData.append('imageFile', sportEvent.posterImage);
@@ -58,7 +60,9 @@ export class SportEventService {
     const formData: FormData = new FormData();
     formData.append('arenaId', arenaId.toString());
     formData.append('eventName', sportEvent.eventName);
-    formData.append('eventDateTime', sportEvent.eventDateTime.toISOString().slice(0, 19));
+
+    const localDateTime = new Date(sportEvent.eventDateTime.getTime() - sportEvent.eventDateTime.getTimezoneOffset() * 60000);
+    formData.append('eventDateTime', localDateTime.toISOString().slice(0, 19));
 
     if (sportEvent.posterImage) {
         formData.append('imageFile', sportEvent.posterImage);

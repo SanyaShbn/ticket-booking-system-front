@@ -5,15 +5,11 @@
       <input matInput id="eventName" formControlName="eventName" required>
       <mat-error *ngIf="eventForm.get('eventName')?.hasError('required')">Event Name is required</mat-error>
     </mat-form-field>
-
-    <mat-form-field appearance="fill">
-      <mat-label>Event Date</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="eventDateTime" required>
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-      <mat-error *ngIf="eventForm.get('eventDateTime')?.hasError('required')">Event Date is required</mat-error>
-    </mat-form-field>
-
+    <div class="custom-datetime-container">
+      <label for="eventDateTime" class="custom-label">Event Date & Time</label>
+      <input type="datetime-local" class="custom-input" id="eventDateTime" formControlName="eventDateTime" required step="60">
+      <div class="custom-error" *ngIf="eventForm.get('eventDateTime')?.hasError('required')">Event Date and Time is required</div>
+    </div>        
     <mat-form-field appearance="fill">
       <mat-label>Arena</mat-label>
       <input type="text" matInput [formControlName]="'arena'" [matAutocomplete]="auto" required>

@@ -1,0 +1,25 @@
+.sport-event-selection {
+    text-align: center;
+    padding: 20px;
+}
+  
+.event-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.event-card img {
+    margin: auto;
+  }
+  
+mat-card {
+    width: 300px;
+    cursor: pointer;
+}
+  
+mat-card:hover {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}  

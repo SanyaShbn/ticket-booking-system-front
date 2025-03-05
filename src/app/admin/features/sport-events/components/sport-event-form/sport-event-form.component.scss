@@ -54,3 +54,37 @@ mat-form-field, form-buttons {
     vertical-align: middle;
   }
   
+  .custom-datetime-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+  }
+  
+  .custom-label {
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .custom-input {
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    padding: 0.875em;
+    border: 1px solid rgba(0, 0, 0, 0.42);
+    border-radius: 4px;
+    box-sizing: border-box;
+    width: 100%;
+    background-color: #f3dde1;
+  }
+  
+  .custom-input:focus {
+    border: 2px solid #c00100;
+    outline: none;
+  }
+  
+  .custom-error {
+    font-size: 12px;
+    color: #f44336;
+    margin-top: 4px;
+  }

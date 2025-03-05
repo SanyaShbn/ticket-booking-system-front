@@ -203,24 +203,6 @@ export class SportEventFormComponent implements OnInit {
     }
   }
 
-  // onPageChange(newPage: number): void {
-  //   this.page = newPage;
-  //   this.arenas$ = this.eventForm.get('arena')!.valueChanges.pipe(
-  //     startWith(''),
-  //     debounceTime(300),
-  //     distinctUntilChanged(),
-  //     switchMap(value => 
-  //       typeof value === 'string'
-  //       ? this.arenaService.getArenasForSportEvents(this.page, 5).pipe(
-  //           map(arenas => arenas.filter((arena: Arena) => 
-  //             arena.name.toLowerCase().includes(value.toLowerCase())
-  //           ))
-  //         )
-  //       : this.arenaService.getArenasForSportEvents(this.page, 5)
-  //     )
-  //   );
-  // }
-
   onPageChange(newPage: number): void {
     if (newPage >= 0 && newPage < this.totalPages) {
       this.page = newPage;
