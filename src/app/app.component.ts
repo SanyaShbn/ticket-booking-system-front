@@ -23,8 +23,13 @@ export class AppComponent implements OnInit, OnDestroy {
   status: string = '';
   private stompClient: Client | null = null;
   private statusTimeout: any;
+  isAdmin: boolean = false;
 
   ngOnInit() {
+    // // Предполагаем, что AuthService предоставляет информацию о роли пользователя
+    // this.isAdmin = this.authService.getUserRole() === 'admin';
+    this.isAdmin = false;
+
     const socket = new SockJS('http://localhost:8081/ws');
     this.stompClient = new Client({
       webSocketFactory: () => socket,

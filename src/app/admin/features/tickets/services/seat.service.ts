@@ -12,6 +12,17 @@ export class SeatService {
 
   constructor(private http: HttpClient) {}
 
+  findByEventId(eventId: number): Observable<any[]> {
+    let params = new HttpParams().set('eventId', eventId.toString());
+  
+    return this.http.get<any[]>(this.apiUrl, { params }).pipe(
+      catchError(error => {
+        console.error('Error fetching seats:', error);
+        return of([]);
+      })
+    );
+  }  
+
   findAvailableSeatsWhenAddingNewTicket(
     eventId: number,
     page: number,

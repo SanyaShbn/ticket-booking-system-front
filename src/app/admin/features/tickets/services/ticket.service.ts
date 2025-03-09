@@ -27,6 +27,15 @@ export class TicketService {
     return this.http.get<any>(this.apiUrl, { params });
   }
 
+  getListOfAllTicketsByEventId(
+    eventId: number
+  ): Observable<any> {
+    let params = new HttpParams()
+      .set('eventId', eventId.toString())
+
+    return this.http.get<any>(this.apiUrl + '/all', { params });
+  }
+
   getTicketById(ticketId: number): Observable<Ticket> {
     return this.http.get<Ticket>(`${this.apiUrl}/${ticketId}`);
   }
