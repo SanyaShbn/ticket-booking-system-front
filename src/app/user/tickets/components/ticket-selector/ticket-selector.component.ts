@@ -27,7 +27,7 @@ export class TicketSelectorComponent implements OnInit {
   sectors: { name: string; rows: { rowNumber: number; seats: any[] }[] }[] = [];
   cartItems: any[] = [];
   totalPrice: number = 0;
-  userId: number = 43; // Пример ID пользователя (будет запрашиваться после аутентификации, сейчас захардкожен)
+  userId: number = 12; // Пример ID пользователя (будет запрашиваться после аутентификации, сейчас захардкожен)
   isLoading: boolean = true;
 
   constructor(
@@ -198,8 +198,11 @@ export class TicketSelectorComponent implements OnInit {
 
   getSeatTooltip(seat: any): string { 
     if (seat.status === 'OUT_OF_STOCK') { 
-      return `Sector: ${seat.sectorName}, Row: ${seat.rowNumber}, Seat: ${seat.seatNumber}, Price: OUT_OF_STOCK`; 
-    } 
+      return `Sector: ${seat.sectorName}, Row: ${seat.rowNumber}, Seat: ${seat.seatNumber}, Status: OUT_OF_STOCK`; 
+    }
+    if (seat.status === 'SOLD') { 
+      return `Sector: ${seat.sectorName}, Row: ${seat.rowNumber}, Seat: ${seat.seatNumber}, Status: SOLD`; 
+    }  
     return `Sector: ${seat.sectorName}, Row: ${seat.rowNumber}, Seat: ${seat.seatNumber}${ seat.price 
       ? `, Price: ${seat.price} BYN` 
       : '' }`; 
@@ -207,5 +210,9 @@ export class TicketSelectorComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/view-available-events']);
-  }  
+  } 
+  
+  checkout(): void {
+    this.router.navigate(['/purchase-commitment'], { queryParams: { eventId: this.eventId } });
+  } 
 }

@@ -41,7 +41,7 @@
     </ul>
     <p>Total Price: {{ totalPrice }} BYN</p>
     <button class="clear-cart-button" (click)="clearCart()" [disabled]="cartItems.length === 0">Clear Cart</button>
-    <button class="checkout-button" [disabled]="cartItems.length === 0">Checkout</button>
+    <button class="checkout-button" (click)="checkout()" [disabled]="cartItems.length === 0">Checkout</button>
   </div>
 
   <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="100" style="margin: 20px auto;"></mat-progress-spinner>

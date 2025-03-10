@@ -15,6 +15,8 @@ import { SportEventSelectionComponent } from './admin/features/sport-events/comp
 import { TicketListComponent } from './admin/features/tickets/components/ticket-list/ticket-list.component';
 import { TicketFormComponent } from './admin/features/tickets/components/ticket-form/ticket-form.component';
 import { TicketSelectorComponent } from './user/tickets/components/ticket-selector/ticket-selector.component';
+import { PurchaseFormComponent } from './user/purchase-form/purchase-form.component';
+import { PurchasedTicketsComponent } from './user/tickets/components/purchased-tickets/purchased-tickets.component';
 
 export const routes: Routes = [
   {
@@ -44,6 +46,8 @@ export const routes: Routes = [
   },
   { path: 'view-available-events', component: SportEventSelectionComponent, data: { navigateTo: '/view-available-tickets' } },
   { path: 'view-available-tickets', component: TicketSelectorComponent },
+  { path: 'purchase-commitment', component: PurchaseFormComponent },
+  { path: 'purchasedTickets', component: PurchasedTicketsComponent },
   { path: '', redirectTo: '/admin', pathMatch: 'full' }
 ];
 

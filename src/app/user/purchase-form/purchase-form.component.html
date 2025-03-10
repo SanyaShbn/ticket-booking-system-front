@@ -1,0 +1,27 @@
+<div class="purchase-form-container">
+    <mat-card class="purchase-card">
+      <mat-card-title>Confirm Your Purchase</mat-card-title>
+  
+      <form (ngSubmit)="submitPurchase()">
+        <mat-form-field appearance="outline" class="form-item">
+          <mat-label>Card Number</mat-label>
+          <input matInput type="text" id="cardNumber" [(ngModel)]="cardNumber" name="cardNumber" maxlength="16" placeholder="1234 5678 9012 3456" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-item">
+          <mat-label>Expiry Date</mat-label>
+          <input matInput type="text" id="cardExpiry" [(ngModel)]="cardExpiry" name="cardExpiry" maxlength="5" placeholder="MM/YY" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-item">
+          <mat-label>CVC</mat-label>
+          <input matInput type="password" id="cardCVC" [(ngModel)]="cardCVC" name="cardCVC" maxlength="3" placeholder="123" required>
+        </mat-form-field>
+  
+        <div class="form-actions">
+          <button mat-stroked-button type="button" color="warn" (click)="cancel()">Back to Tickets</button>
+          <button mat-raised-button type="submit" color="primary">Confirm Purchase</button>
+        </div>
+      </form>
+    </mat-card>
+  </div>  

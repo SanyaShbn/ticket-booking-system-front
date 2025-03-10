@@ -1,0 +1,16 @@
+.purchased-tickets-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+mat-card {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+  
+table {
+    width: 100%;
+}  
