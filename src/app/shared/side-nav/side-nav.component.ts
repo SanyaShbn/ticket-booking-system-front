@@ -4,6 +4,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../auth/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-side-nav',
@@ -19,9 +21,24 @@ import { RouterModule } from '@angular/router';
   standalone: true
 })
 export class SideNavComponent {
+
+  constructor(private authService: AuthService, private router: Router) {}
+
   showMenu = false;
 
   toggleMenu(): void {
     this.showMenu = !this.showMenu;
+  }
+
+  onLogout(): void {
+    this.authService.logout().subscribe(
+      () => {
+        this.router.navigate(['/']);
+      },
+      (error) => {
+        console.error('Logout failed:', error);
+        alert('Logout failed. Please try again.');
+      }
+    );
   }
 }

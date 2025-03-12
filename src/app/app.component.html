@@ -1,14 +1,15 @@
 <app-top-bar/>
 
 <ng-container *ngIf="isAdmin">
-  <app-side-nav>
+   <app-side-nav>
     <router-outlet></router-outlet>
   </app-side-nav>
 </ng-container>
-
+  
 <ng-container *ngIf="!isAdmin">
   <router-outlet></router-outlet>
 </ng-container>
+
 
 <div *ngIf="status" class="status-message" (click)="closeStatusMessage()">
   <p>{{ status }}</p>

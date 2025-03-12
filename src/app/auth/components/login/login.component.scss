@@ -1,0 +1,29 @@
+.login-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.login-card {
+  width: 400px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background-color: white;
+}
+
+.form-item {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.error-container {
+  color: red;
+  margin-bottom: 20px;
+  font-size: 0.9em;
+}
+
+button {
+  width: 100%;
+}

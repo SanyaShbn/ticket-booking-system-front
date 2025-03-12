@@ -17,11 +17,17 @@ import { TicketFormComponent } from './admin/features/tickets/components/ticket-
 import { TicketSelectorComponent } from './user/tickets/components/ticket-selector/ticket-selector.component';
 import { PurchaseFormComponent } from './user/purchase-form/purchase-form.component';
 import { PurchasedTicketsComponent } from './user/tickets/components/purchased-tickets/purchased-tickets.component';
+import { LoginComponent } from './auth/components/login/login.component';
+import { RegisterComponent } from './auth/components/register/register.component';
+import { AuthGuard } from './auth/guards/auth-guard.guard';
+import { RoleGuard } from './auth/guards/role-guard.guard';
 
 export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayoutComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ROLE_ADMIN' },
     children: [
       { path: 'arenas', component: ArenaListComponent },
       { path: 'arenas/new', component: ArenaFormComponent },
@@ -44,11 +50,33 @@ export const routes: Routes = [
       { path: 'tickets/list/edit/:id', component: TicketFormComponent },
     ],
   },
-  { path: 'view-available-events', component: SportEventSelectionComponent, data: { navigateTo: '/view-available-tickets' } },
-  { path: 'view-available-tickets', component: TicketSelectorComponent },
-  { path: 'purchase-commitment', component: PurchaseFormComponent },
-  { path: 'purchasedTickets', component: PurchasedTicketsComponent },
-  { path: '', redirectTo: '/admin', pathMatch: 'full' }
+  { 
+    path: 'view-available-events',
+    component: SportEventSelectionComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { navigateTo: '/view-available-tickets', role: 'ROLE_USER' } 
+  },
+  { 
+    path: 'view-available-tickets', 
+    component: TicketSelectorComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ROLE_USER' },
+  },
+  { 
+    path: 'purchase-commitment', 
+    component: PurchaseFormComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ROLE_USER' }, 
+  },
+  { 
+    path: 'purchasedTickets',
+    component: PurchasedTicketsComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ROLE_USER' },
+  },
+  { path: 'login', component: LoginComponent },
+  { path: 'registration', component: RegisterComponent },
+  { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];
 
 @NgModule({

@@ -5,6 +5,8 @@ import { TopBarComponent } from './shared/top-bar/top-bar.component';
 import { SideNavComponent } from './shared/side-nav/side-nav.component';
 import SockJS from 'sockjs-client';
 import { Client, Message } from '@stomp/stompjs';
+import { AuthService } from './auth/services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -24,11 +26,16 @@ export class AppComponent implements OnInit, OnDestroy {
   private stompClient: Client | null = null;
   private statusTimeout: any;
   isAdmin: boolean = false;
+  private subscription!: Subscription;
+
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    // // Предполагаем, что AuthService предоставляет информацию о роли пользователя
-    // this.isAdmin = this.authService.getUserRole() === 'admin';
-    this.isAdmin = false;
+    this.subscription = this.authService.role$.subscribe((role) => {
+      this.isAdmin = role === 'ADMIN';
+    });
+
+    this.authService.updateRole();
 
     const socket = new SockJS('http://localhost:8081/ws');
     this.stompClient = new Client({
@@ -64,4 +71,5 @@ export class AppComponent implements OnInit, OnDestroy {
       clearTimeout(this.statusTimeout);
     }
   }
+
 }

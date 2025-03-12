@@ -31,6 +31,5 @@ import { AppRoutingModule } from './app.routes';
     MatSortModule,
     AppRoutingModule
   ],
-  providers: []
 })
 export class AppModule { }

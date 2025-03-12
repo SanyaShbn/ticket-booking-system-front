@@ -4,13 +4,17 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './app/interceptors/auth.interceptor';
+import { csrfInterceptor } from './app/interceptors/csrf.interceptor';
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),
-    provideHttpClient(withFetch())
+    provideHttpClient(
+      withInterceptors([authInterceptor, csrfInterceptor])
+    ),
   ]
 });
