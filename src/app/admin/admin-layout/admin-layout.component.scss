@@ -1,13 +1,25 @@
-:host {
+.admin-layout {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-}
+    height: 100vh; /* Задаём высоту страницы */
+  }
   
-app-top-bar {
-    flex: 0 0 auto;
-}
+  .content {
+    display: flex;
+    flex: 1;
+  }
   
-app-side-nav {
-    flex: 1 1 auto;
-}
+  app-side-nav {
+    width: 240px;
+    background-color: #f5f5f5; /* Светлый фон */
+    height: 100%; /* Обеспечиваем растяжение */
+    overflow-y: auto;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .main-content {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto; /* Скроллинг при большом содержимом */
+  }
+  

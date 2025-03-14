@@ -6,7 +6,6 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './app/interceptors/auth.interceptor';
-import { csrfInterceptor } from './app/interceptors/csrf.interceptor';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -14,7 +13,7 @@ bootstrapApplication(AppComponent, {
     provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),
     provideHttpClient(
-      withInterceptors([authInterceptor, csrfInterceptor])
+      withInterceptors([authInterceptor])
     ),
   ]
 });

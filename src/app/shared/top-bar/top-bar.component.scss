@@ -6,3 +6,29 @@ mat-toolbar {
     color: white;
 }
   
+.spacer {
+    flex: 1;
+}
+  
+button mat-icon {
+    font-size: 26px;
+    color: white;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+button:hover mat-icon {
+    color: #ffcccc;
+    transform: scale(1.2);
+}
+
+button {
+    background-color: transparent;
+    border: none;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #e63939;
+}

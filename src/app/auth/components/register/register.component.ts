@@ -9,6 +9,8 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { TopBarComponent } from '../../../shared/top-bar/top-bar.component';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-register',
@@ -22,7 +24,9 @@ import { MatIconModule } from '@angular/material/icon';
     MatFormFieldModule,
     MatButtonModule,
     MatInputModule,
-    MatIconModule
+    MatIconModule,
+    TopBarComponent,
+    MatSnackBarModule
   ]
 })
 export class RegisterComponent {
@@ -33,7 +37,7 @@ export class RegisterComponent {
   hideConfirmPassword: boolean = true;
   errors: string[] = [];
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private snackBar: MatSnackBar) {}
 
   onRegister(): void {
     this.errors = [];
@@ -45,16 +49,25 @@ export class RegisterComponent {
 
     const userDto = { email: this.email, password: this.password, confirmPassword: this.confirmPassword };
 
-    this.http.post(`${environment.apiUrl}` + `registration`, userDto).subscribe(
+    this.http.post(`${environment.apiUrl}` + `users/registration`, userDto).subscribe(
       () => {
-        alert('Registration successful');
+        this.snackBar.open('Registration successful', 'Close', {
+          duration: 3000,
+          panelClass: ['snackbar-success']
+        });
         this.router.navigate(['/login']);
       },
       (error) => {
-        if (error.status === 400) {
-          this.errors.push('Invalid registration data. Please check your input.');
+        if (error.status === 409) {
+          this.snackBar.open('Invalid registration data, such user may already exist. Please check your input.', 'Close', {
+            duration: 3000,
+            panelClass: ['snackbar-error']
+          });
         } else {
-          this.errors.push('An unexpected error occurred. Please try again later.');
+          this.snackBar.open('An unexpected error occurred. Please try again later.', 'Close', {
+            duration: 3000,
+            panelClass: ['snackbar-error']
+          });
         }
       }
     );

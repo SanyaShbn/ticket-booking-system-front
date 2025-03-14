@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { TicketService } from '../../../../admin/features/tickets/services/ticket.service';
 import { SeatService } from '../../../../admin/features/tickets/services/seat.service';
 import { UserCartService } from '../../services/user-cart.service';
+import { AuthService } from '../../../../auth/services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatButton } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TopBarComponent } from '../../../../shared/top-bar/top-bar.component';
 
 @Component({
   selector: 'app-ticket-selector',
@@ -17,36 +19,51 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     CommonModule,
     MatToolbar,
     MatButton,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TopBarComponent
   ],
 })
 export class TicketSelectorComponent implements OnInit {
   eventId!: number;
+  userId!: number;
   seats: any[] = [];
   tickets: any[] = [];
   sectors: { name: string; rows: { rowNumber: number; seats: any[] }[] }[] = [];
   cartItems: any[] = [];
   totalPrice: number = 0;
-  userId: number = 12; // Пример ID пользователя (будет запрашиваться после аутентификации, сейчас захардкожен)
   isLoading: boolean = true;
 
   constructor(
     private ticketService: TicketService,
     private seatService: SeatService,
     private userCartService: UserCartService,
+    private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      this.isLoading = true;
-      this.eventId = +params['eventId'] || 0;
-      this.loadSeatsAndTickets(this.eventId).then(() => {
-        this.loadUserCart();
-        this.isLoading = false;
-      });
-    });
+    const username = this.authService.getUsernameFromToken();
+    if (username) {
+      this.authService.getUserIdByUsername(username).subscribe(
+        (id: number) => {
+          this.userId = id;
+          this.route.queryParams.subscribe(params => {
+            this.isLoading = true;
+            this.eventId = +params['eventId'] || 0;
+            this.loadSeatsAndTickets(this.eventId).then(() => {
+              this.loadUserCart();
+              this.isLoading = false;
+            });
+          });
+        },
+        (error) => {
+          console.error('Failed to fetch user ID:', error);
+        }
+      );
+    } else {
+      console.error('No username found in token');
+    }
   }
 
   loadSeatsAndTickets(eventId: number): Promise<void> {

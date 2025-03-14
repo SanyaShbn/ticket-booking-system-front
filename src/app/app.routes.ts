@@ -44,7 +44,7 @@ export const routes: Routes = [
       { path: 'sport-events', component: SportEventListComponent },
       { path: 'sport-events/new', component: SportEventFormComponent },
       { path: 'sport-events/edit/:id', component: SportEventFormComponent },
-      { path: 'tickets', component: SportEventSelectionComponent },
+      { path: 'tickets', component: SportEventSelectionComponent, data: { showTopBar: false } },
       { path: 'tickets/list', component: TicketListComponent },
       { path: 'tickets/list/new', component: TicketFormComponent },
       { path: 'tickets/list/edit/:id', component: TicketFormComponent },
@@ -54,7 +54,7 @@ export const routes: Routes = [
     path: 'view-available-events',
     component: SportEventSelectionComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { navigateTo: '/view-available-tickets', role: 'ROLE_USER' } 
+    data: { navigateTo: '/view-available-tickets', role: 'ROLE_USER', showTopBar: true } 
   },
   { 
     path: 'view-available-tickets', 

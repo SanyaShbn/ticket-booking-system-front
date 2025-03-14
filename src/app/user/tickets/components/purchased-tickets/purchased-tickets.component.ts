@@ -8,13 +8,20 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../../../config/environment';
 import { jsPDF } from 'jspdf';
 import '../../../../../fonts/Roboto-Regular-normal.js';
+import { TopBarComponent } from '../../../../shared/top-bar/top-bar.component';
 
 @Component({
   selector: 'app-purchased-tickets',
   templateUrl: './purchased-tickets.component.html',
   styleUrls: ['./purchased-tickets.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatCardModule, MatButtonModule]
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatCardModule,
+    MatButtonModule,
+    TopBarComponent
+  ]
 })
 export class PurchasedTicketsComponent implements OnInit {
   purchasedTickets: any[] = [];

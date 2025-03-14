@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../config/environment';
-import { BehaviorSubject } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -10,9 +10,6 @@ import { BehaviorSubject } from 'rxjs';
 export class AuthService {
   private readonly ACCESS_TOKEN_KEY = 'accessToken';
   private readonly REFRESH_TOKEN_KEY = 'refreshToken';
-  private roleSubject = new BehaviorSubject<string | null>(null);
-
-  role$ = this.roleSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -35,6 +32,24 @@ export class AuthService {
       return null;
     }
     return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+  }
+
+  decodeToken(token: string): any {
+    try {
+      return jwtDecode(token);
+    } catch (error) {
+      console.error('Failed to decode token', error);
+      return null;
+    }
+  }
+
+  getUsernameFromToken(): string | null {
+    const token = this.getAccessToken();
+    if (token) {
+      const decoded = this.decodeToken(token);
+      return decoded ? decoded.sub : null;
+    }
+    return null;
   }
 
   saveAccessToken(token: string): void {
@@ -66,9 +81,8 @@ export class AuthService {
     }
   }
 
-  updateRole(): void {
-    const role = this.getUserRole();
-    this.roleSubject.next(role);
+  getUserIdByUsername(username: string): Observable<number> {
+    return this.http.get<number>(`${environment.apiUrl}` + `users/id?username=${username}`);
   }
 
   clearTokens(): void {
@@ -85,10 +99,9 @@ export class AuthService {
     const headers = new HttpHeaders().set('Refresh-Token', refreshToken);
   
     return new Observable<void>((observer) => {
-      this.http.post<void>(`${environment.apiUrl}/logout`, {}, { headers }).subscribe({
+      this.http.post<void>(`${environment.apiUrl}` + `logout`, {}, { headers }).subscribe({
         next: () => {
           this.clearTokens();
-          this.updateRole();
           observer.next();
           observer.complete();
         },

@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TopBarComponent } from '../../shared/top-bar/top-bar.component';
 
 @Component({
   selector: 'app-purchase-form',
@@ -21,7 +22,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    TopBarComponent
   ]
 })
 export class PurchaseFormComponent {

@@ -20,6 +20,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Observable, of } from 'rxjs';
 import { catchError, switchMap  } from 'rxjs/operators';
 import { ImageDialogComponent } from '../image-dialog/image-dialog.component'
+import { TopBarComponent } from '../../../../../shared/top-bar/top-bar.component';
 
 @Component({
   selector: 'app-sport-event-selection',
@@ -38,12 +39,14 @@ import { ImageDialogComponent } from '../image-dialog/image-dialog.component'
     NgIf,
     MatProgressSpinnerModule,
     MatButtonToggleModule,
-    MatCardModule
+    MatCardModule,
+    TopBarComponent
   ]
 })
 
 export class SportEventSelectionComponent implements OnInit, AfterViewInit {
   @Input() navigateTo: string = '/admin/tickets/list';
+  @Input() showTopBar: boolean = true;
 
   dataSource = new MatTableDataSource<any>();
   page: number = 0;
@@ -83,6 +86,7 @@ export class SportEventSelectionComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.route.data.subscribe(data => {
       this.navigateTo = data['navigateTo'] || this.navigateTo;
+      this.showTopBar = data['showTopBar'] !== false;
     });
   }
 

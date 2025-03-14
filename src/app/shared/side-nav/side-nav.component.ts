@@ -30,15 +30,4 @@ export class SideNavComponent {
     this.showMenu = !this.showMenu;
   }
 
-  onLogout(): void {
-    this.authService.logout().subscribe(
-      () => {
-        this.router.navigate(['/']);
-      },
-      (error) => {
-        console.error('Logout failed:', error);
-        alert('Logout failed. Please try again.');
-      }
-    );
-  }
 }

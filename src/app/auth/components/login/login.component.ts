@@ -10,6 +10,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../services/auth.service';
+import { TopBarComponent } from '../../../shared/top-bar/top-bar.component';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +25,9 @@ import { AuthService } from '../../services/auth.service';
     MatFormFieldModule,
     MatButtonModule,
     MatInputModule,
-    MatIconModule
+    MatIconModule,
+    TopBarComponent,
+    MatSnackBarModule
   ]
 })
 export class LoginComponent {
@@ -31,7 +35,7 @@ export class LoginComponent {
   password: string = '';
   hidePassword: boolean = true;
 
-  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
+  constructor(private http: HttpClient, private router: Router, private authService: AuthService,  private snackBar: MatSnackBar) {}
 
   onSubmit(): void {
     const body = { username: this.email, password: this.password };
@@ -43,15 +47,26 @@ export class LoginComponent {
         const role = this.authService.getUserRole();
 
         if (role === 'ROLE_ADMIN') {
+          this.snackBar.open('Login successful as Admin', 'Close', {
+            duration: 3000,
+            panelClass: ['snackbar-success']
+          });
           this.router.navigate(['/admin/arenas']);
         } else if (role === 'ROLE_USER') {
+          this.snackBar.open('Login successful', 'Close', {
+            duration: 3000,
+            panelClass: ['snackbar-success']
+          });
           this.router.navigate(['/view-available-events']);
         }
       },
       (error) => {
         console.error('Login failed:', error);
-        alert('Login failed');
-      }
+        this.snackBar.open('Login failed (bad credentials). Please try again.', 'Close', {
+           duration: 3000,
+           panelClass: ['snackbar-error']
+          });
+        }
     );
   }
 
