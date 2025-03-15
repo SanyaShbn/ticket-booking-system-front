@@ -14,6 +14,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Observable } from 'rxjs';
 import { startWith, map, switchMap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { SeatService } from '../../services/seat.service';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-ticket-form',
@@ -27,7 +28,8 @@ import { SeatService } from '../../services/seat.service';
     MatInputModule, 
     MatButtonModule,
     MatCardModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatSnackBarModule
   ]
 })
 export class TicketFormComponent implements OnInit {
@@ -46,7 +48,8 @@ export class TicketFormComponent implements OnInit {
     private ticketService: TicketService,
     private seatService: SeatService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -111,12 +114,36 @@ export class TicketFormComponent implements OnInit {
     };
 
     if (this.isEditMode) {
-      this.ticketService.updateTicket(this.eventId, this.seatId, this.ticketId, ticket).subscribe(() => {
-        this.router.navigate(['/admin/tickets/list'], { queryParams: { eventId: this.eventId } });
+      this.ticketService.updateTicket(this.eventId, this.seatId, this.ticketId, ticket).subscribe({
+        next: () => {
+          this.snackBar.open('Ticket updated successfully', 'Close', {
+            duration: 3000
+          });
+          this.router.navigate(['/admin/tickets/list'], { queryParams: { eventId: this.eventId } });
+        },
+        error: (err) => {
+          const errorMessage = err?.error?.message || 'Failed to update ticket';
+          this.snackBar.open(errorMessage, 'Close', {
+            duration: 3000,
+            panelClass: 'snackbar-error',
+          });
+        },
       });
     } else {
-      this.ticketService.createTicket(this.eventId, this.seatId, ticket).subscribe(() => {
-        this.router.navigate(['/admin/tickets/list'], { queryParams: { eventId: this.eventId } });
+      this.ticketService.createTicket(this.eventId, this.seatId, ticket).subscribe({
+        next: () => {
+          this.snackBar.open('Ticket created successfully', 'Close', {
+            duration: 3000
+          });
+          this.router.navigate(['/admin/tickets/list'], { queryParams: { eventId: this.eventId } });
+        },
+        error: (err) => {
+          const errorMessage = err?.error?.message || 'Failed to create ticket';
+          this.snackBar.open(errorMessage, 'Close', {
+            duration: 3000,
+            panelClass: 'snackbar-error',
+          });
+        },
       });
     }
   }

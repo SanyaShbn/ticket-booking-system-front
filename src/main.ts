@@ -13,7 +13,9 @@ bootstrapApplication(AppComponent, {
     provideClientHydration(withEventReplay()),
     provideAnimationsAsync(),
     provideHttpClient(
-      withInterceptors([authInterceptor])
+      withInterceptors([
+        authInterceptor
+      ])
     ),
   ]
 });

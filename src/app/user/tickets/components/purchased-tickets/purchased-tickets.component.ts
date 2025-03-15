@@ -9,6 +9,7 @@ import { environment } from '../../../../../config/environment';
 import { jsPDF } from 'jspdf';
 import '../../../../../fonts/Roboto-Regular-normal.js';
 import { TopBarComponent } from '../../../../shared/top-bar/top-bar.component';
+import { AuthService } from '../../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-purchased-tickets',
@@ -26,16 +27,37 @@ import { TopBarComponent } from '../../../../shared/top-bar/top-bar.component';
 export class PurchasedTicketsComponent implements OnInit {
   purchasedTickets: any[] = [];
   displayedColumns: string[] = ['ticketId', 'eventName', 'eventDate', 'arena', 'seatInfo', 'price', 'actions'];
-  userId: number = 12; // Пока все еще хардкожу ID
   eventId!: number;
+  userId!: number;
 
-  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {}
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.eventId = +params['eventId'] || 0;
     });
-    this.loadPurchasedTickets();
+
+    const cachedUserId = this.authService.getUserId();
+    if (cachedUserId) {
+      this.userId = cachedUserId;
+      this.loadPurchasedTickets();
+    } else {
+      const username = this.authService.getUsernameFromToken();
+      if (username) {
+        this.authService.getUserIdByUsername(username).subscribe(
+          (id: number) => {
+            this.userId = id;
+            this.authService.setUserId(id);
+            this.loadPurchasedTickets();
+          },
+          (error) => {
+            console.error('Failed to fetch user ID:', error);
+          }
+        );
+      } else {
+        console.error('No username found in token.');
+      }
+    }
   }
 
   loadPurchasedTickets(): void {

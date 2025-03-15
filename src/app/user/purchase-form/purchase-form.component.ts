@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TopBarComponent } from '../../shared/top-bar/top-bar.component';
+import { AuthService } from '../../auth/services/auth.service';
 
 @Component({
   selector: 'app-purchase-form',
@@ -28,20 +29,51 @@ import { TopBarComponent } from '../../shared/top-bar/top-bar.component';
 })
 export class PurchaseFormComponent {
   eventId!: number;
+  userId!: number;
   cardNumber: string = '';
   cardExpiry: string = '';
   cardCVC: string = '';
-  userId: number = 12; // Заглушка, скоро буду использовать ID аутентифицированного пользователя (пока тестирую без аутентификации)
 
-  constructor(private router: Router, private http: HttpClient, private route: ActivatedRoute, private snackBar: MatSnackBar) {}
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar,
+    private authService: AuthService
+  ) {}
   
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.eventId = +params['eventId'] || 0;
     });
+
+    const cachedUserId = this.authService.getUserId();
+    if (cachedUserId) {
+      this.userId = cachedUserId;
+    } else {
+      const username = this.authService.getUsernameFromToken();
+      if (username) {
+        this.authService.getUserIdByUsername(username).subscribe(
+          (id: number) => {
+            this.userId = id;
+            this.authService.setUserId(id);
+          },
+          (error) => {
+            console.error('Failed to fetch user ID:', error);
+          }
+        );
+      } else {
+        console.error('No username found in token');
+      }
+    }
   }
 
   submitPurchase(): void {
+    if (!this.userId) {
+      this.showNotification('User ID not available. Please try again later.', 'error');
+      return;
+    }
+
     const apiUrl = `${environment.apiUrl}purchases`;
     const params = new HttpParams().set('userId', this.userId.toString());
 

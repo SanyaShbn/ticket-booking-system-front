@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { NgIf } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component'; 
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-sector-list',
@@ -31,7 +32,8 @@ import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filt
     MatToolbarModule,
     MatButtonModule,
     NgIf,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatSnackBarModule
   ]
 })
 export class SectorListComponent implements OnInit, AfterViewInit {
@@ -69,7 +71,7 @@ export class SectorListComponent implements OnInit, AfterViewInit {
     ]}
   ];
 
-  constructor(private sectorService: SectorService, private router: Router, private route: ActivatedRoute) {}
+  constructor(private sectorService: SectorService, private router: Router, private route: ActivatedRoute, private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -117,6 +119,9 @@ export class SectorListComponent implements OnInit, AfterViewInit {
 
   deleteSector(id: number): void {
     this.sectorService.deleteSector(id).subscribe(() => {
+      this.snackBar.open('Sector deleted successfully', 'Close', {
+        duration: 3000
+      });
       this.loadSectors();
     });
   }

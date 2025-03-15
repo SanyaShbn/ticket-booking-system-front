@@ -14,6 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component'; 
 import { Ticket } from '../../models/ticket.model';
 import { TicketService } from '../../services/ticket.service';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-ticket-list',
@@ -31,7 +32,8 @@ import { TicketService } from '../../services/ticket.service';
     MatToolbarModule,
     MatButtonModule,
     NgIf,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatSnackBarModule
   ]
 })
 export class TicketListComponent implements OnInit, AfterViewInit {
@@ -58,7 +60,7 @@ export class TicketListComponent implements OnInit, AfterViewInit {
     ]}
   ];
 
-  constructor(private ticketService: TicketService, private router: Router, private route: ActivatedRoute) {}
+  constructor(private ticketService: TicketService, private router: Router, private route: ActivatedRoute, private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -107,6 +109,9 @@ export class TicketListComponent implements OnInit, AfterViewInit {
 
   deleteTicket(id: number): void {
     this.ticketService.deleteTicket(id).subscribe(() => {
+      this.snackBar.open('Ticket deleted successfully', 'Close', {
+        duration: 3000
+      });
       this.loadTickets();
     });
   }

@@ -18,6 +18,7 @@ import { Observable } from 'rxjs';
 import { startWith, map, switchMap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { MatDialogModule, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-sport-event-form',
@@ -34,7 +35,8 @@ import { MatDialogModule, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angu
     MatNativeDateModule,
     MatCardModule,
     MatAutocompleteModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSnackBarModule
   ]
 })
 export class SportEventFormComponent implements OnInit {
@@ -55,7 +57,8 @@ export class SportEventFormComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -144,12 +147,36 @@ export class SportEventFormComponent implements OnInit {
     };
 
     if (this.isEditMode) {
-      this.sportEventService.updateSportEvent(this.arenaId, this.eventId, event).subscribe(() => {
-        this.router.navigate(['/admin/sport-events']);
+      this.sportEventService.updateSportEvent(this.arenaId, this.eventId, event).subscribe({
+        next: () => {
+          this.snackBar.open('Sport event updated successfully', 'Close', {
+            duration: 3000
+          });
+          this.router.navigate(['/admin/sport-events']);
+        },
+        error: (err) => {
+          const errorMessage = err?.error?.message || 'Failed to update sport event';
+          this.snackBar.open(errorMessage, 'Close', {
+            duration: 3000,
+            panelClass: 'snackbar-error',
+          });
+        },
     });
     } else {
-      this.sportEventService.createSportEvent(this.arenaId, event).subscribe(() => {
-        this.router.navigate(['/admin/sport-events']);
+      this.sportEventService.createSportEvent(this.arenaId, event).subscribe({
+        next: () => {
+          this.snackBar.open('Sport event created successfully', 'Close', {
+            duration: 3000
+          });
+          this.router.navigate(['/admin/sport-events']);
+        },
+        error: (err) => {
+          const errorMessage = err?.error?.message || 'Failed to create sport event';
+          this.snackBar.open(errorMessage, 'Close', {
+            duration: 3000,
+            panelClass: 'snackbar-error',
+          });
+        },
       });
     }
   }

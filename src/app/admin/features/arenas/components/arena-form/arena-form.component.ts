@@ -8,7 +8,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { NgIf } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http'
+import { HttpClientModule } from '@angular/common/http';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-arena-form',
@@ -22,7 +23,8 @@ import { HttpClientModule } from '@angular/common/http'
     MatButtonModule,
     ReactiveFormsModule,
     NgIf,
-    HttpClientModule
+    HttpClientModule,
+    MatSnackBarModule
   ]
 })
 export class ArenaFormComponent implements OnInit {
@@ -33,7 +35,8 @@ export class ArenaFormComponent implements OnInit {
     private fb: FormBuilder,
     private arenaService: ArenaService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {
     this.arenaForm = this.fb.group({
       name: ['', Validators.required],
@@ -58,12 +61,36 @@ export class ArenaFormComponent implements OnInit {
     if (this.arenaForm.valid) {
       const arena: Arena = this.arenaForm.value;
       if (this.arenaId) {
-        this.arenaService.updateArena(this.arenaId, arena).subscribe(() => {
-          this.router.navigate(['/admin/arenas']);
+        this.arenaService.updateArena(this.arenaId, arena).subscribe({
+          next: () => {
+            this.snackBar.open('Arena updated successfully', 'Close', {
+              duration: 3000,
+            });
+            this.router.navigate(['/admin/arenas']);
+          },
+          error: (err) => {
+            const errorMessage = err?.error?.message || 'Failed to update arena';
+            this.snackBar.open(errorMessage, 'Close', {
+              duration: 3000,
+              panelClass: 'snackbar-error',
+            });
+          },
         });
       } else {
-        this.arenaService.createArena(arena).subscribe(() => {
-          this.router.navigate(['/admin/arenas']);
+        this.arenaService.createArena(arena).subscribe({
+          next: () => {
+            this.snackBar.open('Arena created successfully', 'Close', {
+              duration: 3000,
+            });
+            this.router.navigate(['/admin/arenas']);
+          },
+          error: (err) => {
+            const errorMessage = err?.error?.message || 'Failed to create arena';
+            this.snackBar.open(errorMessage, 'Close', {
+              duration: 3000,
+              panelClass: 'snackbar-error',
+            });
+          },
         });
       }
     }

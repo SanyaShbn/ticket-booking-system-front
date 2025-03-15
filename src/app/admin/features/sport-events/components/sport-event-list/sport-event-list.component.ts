@@ -21,7 +21,8 @@ import { MatDialog } from '@angular/material/dialog'
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Observable, of } from 'rxjs';
 import { catchError, switchMap  } from 'rxjs/operators';
-import { ImageDialogComponent } from '../image-dialog/image-dialog.component'
+import { ImageDialogComponent } from '../image-dialog/image-dialog.component';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { saveAs } from 'file-saver';
 
 @Component({
@@ -42,7 +43,8 @@ import { saveAs } from 'file-saver';
     NgIf,
     MatProgressSpinnerModule,
     MatButtonToggleModule,
-    MatCardModule
+    MatCardModule,
+    MatSnackBarModule
   ]
 })
 export class SportEventListComponent implements OnInit, AfterViewInit {
@@ -79,7 +81,8 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
     private sportEventService: SportEventService, 
     private router: Router, 
     private sanitizer: DomSanitizer,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {}
@@ -131,6 +134,9 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
 
   deleteSportEvent(id: number): void {
     this.sportEventService.deleteSportEvent(id).subscribe(() => {
+      this.snackBar.open('Sport event deleted successfully', 'Close', {
+        duration: 3000
+      });
       this.loadSportEvents();
     });
   }

@@ -16,7 +16,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { PaginatorComponent } from '../../../../../shared/paginator/paginator.component';
 import { NgIf } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component'; 
+import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar'; 
 
 @Component({
   selector: 'app-arena-list',
@@ -35,7 +36,8 @@ import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filt
     PaginatorComponent,
     NgIf,
     MatProgressSpinnerModule,
-    FilterComponent
+    FilterComponent,
+    MatSnackBarModule
   ]
 })
 export class ArenaListComponent implements OnInit {
@@ -68,7 +70,7 @@ export class ArenaListComponent implements OnInit {
     ]}
   ];
 
-  constructor(private arenaService: ArenaService, private router: Router) { }
+  constructor(private arenaService: ArenaService, private router: Router, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {}
 
@@ -117,6 +119,9 @@ export class ArenaListComponent implements OnInit {
 
   deleteArena(id: number): void {
     this.arenaService.deleteArena(id).subscribe(() => {
+      this.snackBar.open('Arena deleted successfully', 'Close', {
+        duration: 3000
+      });
       this.loadArenas();
     });
   }

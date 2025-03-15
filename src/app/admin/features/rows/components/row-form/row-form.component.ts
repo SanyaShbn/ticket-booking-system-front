@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-row-form',
@@ -21,7 +22,8 @@ import { MatCardModule } from '@angular/material/card';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatCardModule
+    MatCardModule,
+    MatSnackBarModule
   ]
 })
 export class RowFormComponent implements OnInit {
@@ -35,7 +37,8 @@ export class RowFormComponent implements OnInit {
     private fb: FormBuilder,
     private rowService: RowService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -75,12 +78,36 @@ export class RowFormComponent implements OnInit {
     };
 
     if (this.isEditMode) {
-      this.rowService.updateRow(this.sectorId, this.rowId, row).subscribe(() => {
-        this.router.navigate(['/admin/rows/list'], { queryParams: { sectorId: this.sectorId, arenaId: this.arenaId } });
+      this.rowService.updateRow(this.sectorId, this.rowId, row).subscribe({
+        next: () => {
+          this.snackBar.open('Row updated successfully', 'Close', {
+            duration: 3000
+          });
+          this.router.navigate(['/admin/rows/list'], { queryParams: { sectorId: this.sectorId, arenaId: this.arenaId } });
+        },
+        error: (err) => {
+          const errorMessage = err?.error?.message || 'Failed to update row';
+          this.snackBar.open(errorMessage, 'Close', {
+            duration: 3000,
+            panelClass: 'snackbar-error',
+          });
+        },
       });
     } else {
-      this.rowService.createRow(this.sectorId, row).subscribe(() => {
-        this.router.navigate(['/admin/rows/list'], { queryParams: { sectorId: this.sectorId, arenaId: this.arenaId } });
+      this.rowService.createRow(this.sectorId, row).subscribe({
+        next: () => {
+          this.snackBar.open('Row created successfully', 'Close', {
+            duration: 3000
+          });
+          this.router.navigate(['/admin/rows/list'], { queryParams: { sectorId: this.sectorId, arenaId: this.arenaId } });
+        },
+        error: (err) => {
+          const errorMessage = err?.error?.message || 'Failed to create row';
+          this.snackBar.open(errorMessage, 'Close', {
+            duration: 3000,
+            panelClass: 'snackbar-error',
+          });
+        },
       });
     }
   }

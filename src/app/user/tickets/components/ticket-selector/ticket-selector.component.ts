@@ -47,15 +47,9 @@ export class TicketSelectorComponent implements OnInit {
     if (username) {
       this.authService.getUserIdByUsername(username).subscribe(
         (id: number) => {
+          this.authService.setUserId(id);
           this.userId = id;
-          this.route.queryParams.subscribe(params => {
-            this.isLoading = true;
-            this.eventId = +params['eventId'] || 0;
-            this.loadSeatsAndTickets(this.eventId).then(() => {
-              this.loadUserCart();
-              this.isLoading = false;
-            });
-          });
+          this.initializeComponent();
         },
         (error) => {
           console.error('Failed to fetch user ID:', error);
@@ -64,6 +58,17 @@ export class TicketSelectorComponent implements OnInit {
     } else {
       console.error('No username found in token');
     }
+  }
+
+  initializeComponent(): void {
+    this.route.queryParams.subscribe(params => {
+      this.isLoading = true;
+      this.eventId = +params['eventId'] || 0;
+      this.loadSeatsAndTickets(this.eventId).then(() => {
+        this.loadUserCart();
+        this.isLoading = false;
+      });
+    });
   }
 
   loadSeatsAndTickets(eventId: number): Promise<void> {

@@ -14,6 +14,7 @@ import { NgIf } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component'; 
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-row-list',
@@ -31,7 +32,8 @@ import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filt
     MatToolbarModule,
     MatButtonModule,
     NgIf,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatSnackBarModule
   ]
 })
 export class RowListComponent implements OnInit {
@@ -64,7 +66,12 @@ export class RowListComponent implements OnInit {
     seatsNumbOrder: ''
   };
 
-  constructor(private rowService: RowService, private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private rowService: RowService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -112,6 +119,9 @@ export class RowListComponent implements OnInit {
 
   deleteRow(id: number): void {
     this.rowService.deleteRow(id).subscribe(() => {
+      this.snackBar.open('Row deleted successfully', 'Close', {
+        duration: 3000
+      });
       this.loadRows();
     });
   }
