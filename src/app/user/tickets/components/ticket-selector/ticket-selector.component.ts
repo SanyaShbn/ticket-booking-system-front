@@ -9,6 +9,7 @@ import { MatToolbar } from '@angular/material/toolbar';
 import { MatButton } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TopBarComponent } from '../../../../shared/top-bar/top-bar.component';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-ticket-selector',
@@ -20,7 +21,8 @@ import { TopBarComponent } from '../../../../shared/top-bar/top-bar.component';
     MatToolbar,
     MatButton,
     MatProgressSpinnerModule,
-    TopBarComponent
+    TopBarComponent,
+    MatSnackBarModule
   ],
 })
 export class TicketSelectorComponent implements OnInit {
@@ -39,7 +41,8 @@ export class TicketSelectorComponent implements OnInit {
     private userCartService: UserCartService,
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -128,6 +131,16 @@ export class TicketSelectorComponent implements OnInit {
           return null;
         }
       }).filter(item => item !== null);
+
+      this.seats.forEach((seat) => {
+        if (
+          seat.status === 'RESERVED' && // Место помечено как зарезервированное
+          !this.cartItems.some(item => item.seatId === seat.id) // Но его нет в cartItems 
+                                                                // (значит, бронируется в данный момент другим пользователем, не текущим)
+        ) {
+          seat.status = 'OUT_OF_STOCK'; // Возвращаем статус вновь в OUT_OF_STOCK (нет в продаже) для текущего пользователя
+        }
+      });
   
       this.calculateTotalPrice(); 
     });
@@ -142,20 +155,36 @@ export class TicketSelectorComponent implements OnInit {
   }
 
   addToCart(seat: any): void {
-    this.userCartService.addToCart(this.userId, seat.ticketId).subscribe(() => {
-      this.cartItems.push({
-        ticketId: seat.ticketId,
-        seatId: seat.id,
-        price: seat.price,
-        sectorName: seat.sectorName,
-        rowNumber: seat.rowNumber,
-        seatNumber: seat.seatNumber,
-        status: 'RESERVED',
+    this.userCartService.addToCart(this.userId, seat.ticketId).subscribe({
+      next: () => {
+        this.cartItems.push({
+          ticketId: seat.ticketId,
+          seatId: seat.id,
+          price: seat.price,
+          sectorName: seat.sectorName,
+          rowNumber: seat.rowNumber,
+          seatNumber: seat.seatNumber,
+          status: 'RESERVED',
+        });
+  
+        seat.status = 'RESERVED';
+        this.calculateTotalPrice();
+      },
+      error: (err) => {
+        console.error('Error adding to cart:', err);
+        if (err.status === 409) {
+          this.snackBar.open('This seat is already being reserved by someone else. We apologize for the inconvenience caused.', 'Close', {
+            duration: 3000,
+            panelClass: 'snackbar-error',
+          });
+        } else {
+          this.snackBar.open('An error occurred while adding the seat to the cart.', 'Close', {
+            duration: 3000,
+            panelClass: 'snackbar-error',
+          });
+        }
+       }
       });
-
-      seat.status = 'RESERVED';
-      this.calculateTotalPrice();
-    });
   }
 
   getSeatByCartItem(cartItem: any): any {

@@ -28,12 +28,7 @@ export class UserCartService {
       .set('ticketId', ticketId.toString())
       .set('action', 'add');
 
-    return this.http.post(this.apiUrl, {}, { params, responseType: 'text' }).pipe(
-      catchError((error) => {
-        console.error('Error adding to cart:', error);
-        return of('Failed to add item to cart');
-      })
-    );
+    return this.http.post(this.apiUrl, {}, { params, responseType: 'text' });
   }
 
   removeFromCart(userId: number, ticketId: number): Observable<string> {

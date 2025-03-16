@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ticket-booking-system-front
+    ports:
+      - "4200:4200"
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    external: true
