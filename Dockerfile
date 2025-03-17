@@ -12,7 +12,7 @@ FROM nginx:alpine
 
 RUN rm -f /etc/nginx/conf.d/default.conf
 
-COPY --from=build /app/dist/ticket-booking-system-front/browser/* /usr/share/nginx/html
+COPY --from=build /app/dist/ticket-booking-system-front/browser/* /usr/share/nginx/html/
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
