@@ -1,36 +1,38 @@
 <div class="sector-selection">
-    <button mat-raised-button color="primary" (click)="goBack()">Back to Arena Selection</button>
+  <button mat-raised-button color="primary" (click)="goBack()">
+      {{ 'SECTOR_SELECTION_BACK_BUTTON' | translate }}
+  </button>
 
-    <h2>Select a Sector to View Its Rows</h2>
-  
-    <app-filter [filterConfig]="filterConfig" (filterChanged)="onFilterChanged($event)"></app-filter>
-  
-    <div class="sector-cards" *ngIf="!isLoading && dataSource.data.length > 0">
+  <h2>{{ 'SECTOR_SELECTION_TITLE' | translate }}</h2>
+
+  <app-filter [filterConfig]="filterConfig" (filterChanged)="onFilterChanged($event)"></app-filter>
+
+  <div class="sector-cards" *ngIf="!isLoading && dataSource.data.length > 0">
       <mat-card *ngFor="let sector of dataSource.data" (click)="selectSector(sector.id)">
-        <mat-card-title>{{ sector.sectorName }}</mat-card-title>
-        <mat-card-content>
-          <p>Max Rows Number: {{ sector.maxRowsNumb }}</p>
-          <p>Available Rows Number: {{ sector.availableRowsNumb }}</p>
-          <p>Max Seats Number: {{ sector.maxSeatsNumb }}</p>
-          <p>Available Seats Number: {{ sector.availableSeatsNumb }}</p>
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-button>View Rows</button>
-        </mat-card-actions>
+          <mat-card-title>{{ sector.sectorName }}</mat-card-title>
+          <mat-card-content>
+              <p>{{ 'SECTOR_SELECTION_MAX_ROWS' | translate }}: {{ sector.maxRowsNumb }}</p>
+              <p>{{ 'SECTOR_SELECTION_AVAILABLE_ROWS' | translate }}: {{ sector.availableRowsNumb }}</p>
+              <p>{{ 'SECTOR_SELECTION_MAX_SEATS' | translate }}: {{ sector.maxSeatsNumb }}</p>
+              <p>{{ 'SECTOR_SELECTION_AVAILABLE_SEATS' | translate }}: {{ sector.availableSeatsNumb }}</p>
+          </mat-card-content>
+          <mat-card-actions>
+              <button mat-button>{{ 'SECTOR_SELECTION_VIEW_ROWS_BUTTON' | translate }}</button>
+          </mat-card-actions>
       </mat-card>
-    </div>
+  </div>
 
-    <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="100" style="margin: 20px auto;"></mat-progress-spinner>
+  <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="100" style="margin: 20px auto;"></mat-progress-spinner>
 
-    <div *ngIf="!isLoading && dataSource.data.length === 0">
-        <p>No data available</p>
-    </div>
-  
-    <app-paginator 
+  <div *ngIf="!isLoading && dataSource.data.length === 0">
+      <p>{{ 'SECTOR_SELECTION_NO_DATA' | translate }}</p>
+  </div>
+
+  <app-paginator 
       [page]="page" 
       [size]="size" 
       [totalElements]="totalElements" 
       (pageChange)="onPageChange($event)" 
       (sizeChange)="onSizeChange($event)">
-    </app-paginator>
-</div>  
+  </app-paginator>
+</div>

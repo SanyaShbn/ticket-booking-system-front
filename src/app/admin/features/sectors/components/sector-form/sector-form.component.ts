@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-sector-form',
@@ -23,7 +24,8 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
     MatInputModule, 
     MatButtonModule,
     MatCardModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ]
 })
 export class SectorFormComponent implements OnInit {
@@ -37,7 +39,8 @@ export class SectorFormComponent implements OnInit {
     private sectorService: SectorService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -79,14 +82,16 @@ export class SectorFormComponent implements OnInit {
     if (this.isEditMode) {
       this.sectorService.updateSector(this.arenaId, this.sectorId, sector).subscribe({
         next: () => {
-          this.snackBar.open('Sector updated successfully', 'Close', {
-            duration: 3000
+          this.translate.get('SECTOR_UPDATE_SUCCESS').subscribe((message) => {
+            this.snackBar.open(message, this.translate.instant('CLOSE'), {
+              duration: 3000
+            });
           });
           this.router.navigate(['/admin/sectors/list'], { queryParams: { arenaId: this.arenaId } });
         },
         error: (err) => {
-          const errorMessage = err?.error?.message || 'Failed to update sector';
-          this.snackBar.open(errorMessage, 'Close', {
+          const errorMessage = err?.error?.message || this.translate.instant('SECTOR_UPDATE_FAILURE');
+          this.snackBar.open(errorMessage, this.translate.instant('CLOSE'), {
             duration: 3000,
             panelClass: 'snackbar-error',
           });
@@ -95,14 +100,16 @@ export class SectorFormComponent implements OnInit {
     } else {
       this.sectorService.createSector(this.arenaId, sector).subscribe({
         next: () => {
-          this.snackBar.open('Sector created successfully', 'Close', {
-            duration: 3000
+          this.translate.get('SECTOR_CREATE_SUCCESS').subscribe((message) => {
+            this.snackBar.open(message, this.translate.instant('CLOSE'), {
+              duration: 3000
+            });
           });
           this.router.navigate(['/admin/sectors/list'], { queryParams: { arenaId: this.arenaId } });
         },
         error: (err) => {
-          const errorMessage = err?.error?.message || 'Failed to create sector';
-          this.snackBar.open(errorMessage, 'Close', {
+          const errorMessage = err?.error?.message || this.translate.instant('SECTOR_CREATE_FAILURE');
+          this.snackBar.open(errorMessage, this.translate.instant('CLOSE'), {
             duration: 3000,
             panelClass: 'snackbar-error',
           });

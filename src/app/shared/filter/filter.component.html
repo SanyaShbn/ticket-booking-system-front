@@ -1,5 +1,5 @@
 <button mat-raised-button type="button" (click)="toggleFilterForm()" style="margin: 5px;">
-    {{ showFilterForm ? 'Hide Filter' : 'Show Filter' }}
+  {{ showFilterForm ? ('FILTER_BUTTON_HIDE' | translate) : ('FILTER_BUTTON_SHOW' | translate) }}
 </button>
 
 <div *ngIf="showFilterForm" class="filter-form">
@@ -22,7 +22,11 @@
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
     </ng-container>
-    <button mat-raised-button color="primary" type="submit">Apply Filters</button>
-    <button mat-button type="button" (click)="resetFilter()">Reset Filters</button>
+    <button mat-raised-button color="primary" type="submit">
+      {{ 'FILTER_APPLY_BUTTON' | translate }}
+    </button>
+    <button mat-button type="button" (click)="resetFilter()">
+      {{ 'FILTER_RESET_BUTTON' | translate }}
+    </button>
   </form>  
 </div>  

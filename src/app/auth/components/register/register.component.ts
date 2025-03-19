@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { TopBarComponent } from '../../../shared/top-bar/top-bar.component';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-register',
@@ -26,7 +27,8 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
     MatInputModule,
     MatIconModule,
     TopBarComponent,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ]
 })
 export class RegisterComponent {
@@ -37,13 +39,20 @@ export class RegisterComponent {
   hideConfirmPassword: boolean = true;
   errors: string[] = [];
 
-  constructor(private http: HttpClient, private router: Router, private snackBar: MatSnackBar) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private snackBar: MatSnackBar,
+    private translate: TranslateService
+  ) {}
 
   onRegister(): void {
     this.errors = [];
 
     if (this.password !== this.confirmPassword) {
-      this.errors.push('Passwords do not match');
+      this.translate.get('PASSWORDS_DO_NOT_MATCH').subscribe((message) => {
+        this.errors.push(message);
+      });
       return;
     }
 
@@ -51,23 +60,29 @@ export class RegisterComponent {
 
     this.http.post(`${environment.apiUrl}` + `users/registration`, userDto).subscribe(
       () => {
-        this.snackBar.open('Registration successful', 'Close', {
-          duration: 3000,
-          panelClass: ['snackbar-success']
+        this.translate.get('REGISTRATION_SUCCESS').subscribe((message) => {
+          this.snackBar.open(message, this.translate.instant('CLOSE'), {
+            duration: 3000,
+            panelClass: ['snackbar-success']
+          });
         });
         this.router.navigate(['/login']);
       },
       (error) => {
         if (error.status === 409) {
-          this.snackBar.open('Invalid registration data, such user may already exist. Please check your input.', 'Close', {
-            duration: 3000,
-            panelClass: ['snackbar-error']
+          this.translate.get('REGISTRATION_DUPLICATE').subscribe((message) => {
+            this.snackBar.open(message, this.translate.instant('CLOSE'), {
+              duration: 3000,
+              panelClass: ['snackbar-error']
+            });
           });
         } else {
-          this.snackBar.open('An unexpected error occurred. Please try again later.', 'Close', {
+          this.translate.get('REGISTRATION_FAILURE').subscribe((message) => {
+          this.snackBar.open(message, this.translate.instant('CLOSE'), {
             duration: 3000,
             panelClass: ['snackbar-error']
           });
+        });
         }
       }
     );

@@ -1,27 +1,39 @@
 <mat-card>
-    <form [formGroup]="arenaForm" (ngSubmit)="onSubmit()">
-      <mat-form-field>
-        <mat-label>Name</mat-label>
-        <input matInput id="name" formControlName="name" required>
-        <mat-error *ngIf="arenaForm.get('name')?.hasError('required')">Name is required</mat-error>
-      </mat-form-field>
-  
-      <mat-form-field>
-        <mat-label>City</mat-label>
-        <input matInput id="city" formControlName="city" required>
-        <mat-error *ngIf="arenaForm.get('city')?.hasError('required')">City is required</mat-error>
-      </mat-form-field>
-  
-      <mat-form-field>
-        <mat-label>Capacity</mat-label>
-        <input matInput id="capacity" formControlName="capacity" type="number" min="1" required>
-        <mat-error *ngIf="arenaForm.get('capacity')?.hasError('required')">Capacity is required</mat-error>
-        <mat-error *ngIf="arenaForm.get('capacity')?.hasError('min')">Minimum capacity is 1</mat-error>
-      </mat-form-field>
-  
-      <div class="form-buttons">
-        <button mat-raised-button color="primary" type="submit">Save</button>
-        <button mat-button type="button" (click)="cancel()">Cancel</button>
-      </div>
-    </form>
-  </mat-card>  
+  <form [formGroup]="arenaForm" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <mat-label>{{ 'ARENA_FORM_NAME_LABEL' | translate }}</mat-label>
+      <input matInput id="name" formControlName="name" required>
+      <mat-error *ngIf="arenaForm.get('name')?.hasError('required')">
+        {{ 'ARENA_FORM_NAME_REQUIRED' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>{{ 'ARENA_FORM_CITY_LABEL' | translate }}</mat-label>
+      <input matInput id="city" formControlName="city" required>
+      <mat-error *ngIf="arenaForm.get('city')?.hasError('required')">
+        {{ 'ARENA_FORM_CITY_REQUIRED' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>{{ 'ARENA_FORM_CAPACITY_LABEL' | translate }}</mat-label>
+      <input matInput id="capacity" formControlName="capacity" type="number" min="1" required>
+      <mat-error *ngIf="arenaForm.get('capacity')?.hasError('required')">
+        {{ 'ARENA_FORM_CAPACITY_REQUIRED' | translate }}
+      </mat-error>
+      <mat-error *ngIf="arenaForm.get('capacity')?.hasError('min')">
+        {{ 'ARENA_FORM_CAPACITY_MIN' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <div class="form-buttons">
+      <button mat-raised-button color="primary" type="submit">
+        {{ isEditMode ? ('BUTTON_UPDATE' | translate) : ('BUTTON_CREATE' | translate) }}
+      </button>
+      <button mat-button type="button" (click)="cancel()">
+        {{ 'BUTTON_CANCEL' | translate }}
+      </button>
+    </div>
+  </form>
+</mat-card>

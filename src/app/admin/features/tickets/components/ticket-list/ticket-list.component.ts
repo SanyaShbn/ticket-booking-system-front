@@ -15,6 +15,8 @@ import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filt
 import { Ticket } from '../../models/ticket.model';
 import { TicketService } from '../../services/ticket.service';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-ticket-list',
@@ -33,7 +35,8 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
     MatButtonModule,
     NgIf,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ]
 })
 export class TicketListComponent implements OnInit, AfterViewInit {
@@ -52,21 +55,44 @@ export class TicketListComponent implements OnInit, AfterViewInit {
     priceSortOrder: ''
   };
 
-  filterConfig: FilterConfig[] = [
-    { label: 'Price Sort Order', formControlName: 'priceSortOrder', type: 'select', options: [
-      { value: '', viewValue: '-- Sorting --' },
-      { value: 'ASC', viewValue: 'Ascending' },
-      { value: 'DESC', viewValue: 'Descending' }
-    ]}
-  ];
+  filterConfig: FilterConfig[] = [];
+  private langChangeSubscription!: Subscription;
 
-  constructor(private ticketService: TicketService, private router: Router, private route: ActivatedRoute, private snackBar: MatSnackBar) {}
+  constructor(
+    private ticketService: TicketService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar,
+    private translate: TranslateService 
+  ) {}
 
   ngOnInit(): void {
+    this.updateFilterConfig();
+    
+    this.langChangeSubscription = this.translate.onLangChange.subscribe(() => {
+      this.updateFilterConfig();
+    });
+
     this.route.queryParams.subscribe(params => {
       this.eventId = +params['eventId'] || 0;
       this.loadTickets();
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.langChangeSubscription) {
+      this.langChangeSubscription.unsubscribe();
+    }
+  }
+
+  updateFilterConfig(): void {
+    this.filterConfig = [
+      { label: this.translate.instant('FILTER_PRICE_SORT'), formControlName: 'priceSortOrder', type: 'select', options: [
+        { value: '', viewValue: this.translate.instant('FILTER_SORTING') },
+        { value: 'ASC', viewValue: this.translate.instant('FILTER_ASCENDING') },
+        { value: 'DESC', viewValue: this.translate.instant('FILTER_DESCENDING') }
+      ]}
+    ];
   }
 
   ngAfterViewInit(): void {
@@ -86,7 +112,11 @@ export class TicketListComponent implements OnInit, AfterViewInit {
     ).subscribe(data => {
       this.dataSource.data = data.content.map((ticket: any) => ({
       ...ticket,
-      seatInfo: ticket.seat ? `Sector: ${ticket.seat.row.sector.sectorName}, Row: ${ticket.seat.row.rowNumber}, Seat №${ticket.seat.seatNumber}` : 'Unknown'
+      seatInfo: ticket.seat 
+        ? `${this.translate.instant('SECTOR_LABEL')} ${ticket.seat.row.sector.sectorName}, ` +
+          `${this.translate.instant('ROW_LABEL')} ${ticket.seat.row.rowNumber}, ` +
+          `${this.translate.instant('SEAT_LABEL')} №${ticket.seat.seatNumber}`
+        : this.translate.instant('UNKNOWN_SEAT')
       }));
       this.totalElements = data.metadata.totalElements;
       this.isLoading = false;
@@ -109,8 +139,10 @@ export class TicketListComponent implements OnInit, AfterViewInit {
 
   deleteTicket(id: number): void {
     this.ticketService.deleteTicket(id).subscribe(() => {
-      this.snackBar.open('Ticket deleted successfully', 'Close', {
-        duration: 3000
+      this.translate.get('TICKET_DELETE_SUCCESS').subscribe((message) => {
+        this.snackBar.open(message, this.translate.instant('CLOSE'), {
+          duration: 3000
+        });
       });
       this.loadTickets();
     });

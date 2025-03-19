@@ -1,32 +1,32 @@
 <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav mode="side" [(opened)]="showMenu" class="sidenav">
-      <mat-nav-list>
-        <a mat-list-item routerLink="/admin/arenas" routerLinkActive="active">
-          <mat-icon>stadium</mat-icon>
-          <span>Arenas</span>
-        </a>
-        <a mat-list-item routerLink="/admin/sectors" routerLinkActive="active">
-          <mat-icon>layers</mat-icon>
-          <span>Arena Sectors</span>
-        </a>
-        <a mat-list-item routerLink="/admin/rows" routerLinkActive="active">
-          <mat-icon>format_list_numbered</mat-icon>
-          <span>Arena Sector Rows</span>
-        </a>
-        <a mat-list-item routerLink="/admin/sport-events" routerLinkActive="active">
-          <mat-icon>sports</mat-icon>
-          <span>Sport Events</span>
-        </a>
-        <a mat-list-item routerLink="/admin/tickets" routerLinkActive="active">
-          <mat-icon>confirmation_number</mat-icon>
-          <span>Tickets</span>
-        </a>
-      </mat-nav-list>
-    </mat-sidenav>
-    <mat-sidenav-content>
-      <button mat-icon-button (click)="toggleMenu()">
-        <mat-icon>{{ showMenu ? 'arrow_back' : 'menu' }}</mat-icon>
-      </button>
-      <ng-content></ng-content>
-    </mat-sidenav-content>
-</mat-sidenav-container>  
+  <mat-sidenav mode="side" [(opened)]="showMenu" class="sidenav">
+    <mat-nav-list>
+      <a mat-list-item routerLink="/admin/arenas" routerLinkActive="active">
+        <mat-icon>stadium</mat-icon>
+        <span>{{ 'NAV_ARENAS' | translate }}</span>
+      </a>
+      <a mat-list-item routerLink="/admin/sectors" routerLinkActive="active">
+        <mat-icon>layers</mat-icon>
+        <span>{{ 'NAV_ARENA_SECTORS' | translate }}</span>
+      </a>
+      <a mat-list-item routerLink="/admin/rows" routerLinkActive="active">
+        <mat-icon>format_list_numbered</mat-icon>
+        <span>{{ 'NAV_ARENA_SECTOR_ROWS' | translate }}</span>
+      </a>
+      <a mat-list-item routerLink="/admin/sport-events" routerLinkActive="active">
+        <mat-icon>sports</mat-icon>
+        <span>{{ 'NAV_SPORT_EVENTS' | translate }}</span>
+      </a>
+      <a mat-list-item routerLink="/admin/tickets" routerLinkActive="active">
+        <mat-icon>confirmation_number</mat-icon>
+        <span>{{ 'NAV_TICKETS' | translate }}</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <button mat-icon-button (click)="toggleMenu()">
+      <mat-icon>{{ showMenu ? 'arrow_back' : 'menu' }}</mat-icon>
+    </button>
+    <ng-content></ng-content>
+  </mat-sidenav-content>
+</mat-sidenav-container>

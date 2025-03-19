@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-row-form',
@@ -23,7 +24,8 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
     MatInputModule,
     MatButtonModule,
     MatCardModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ]
 })
 export class RowFormComponent implements OnInit {
@@ -38,7 +40,8 @@ export class RowFormComponent implements OnInit {
     private rowService: RowService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -80,14 +83,16 @@ export class RowFormComponent implements OnInit {
     if (this.isEditMode) {
       this.rowService.updateRow(this.sectorId, this.rowId, row).subscribe({
         next: () => {
-          this.snackBar.open('Row updated successfully', 'Close', {
-            duration: 3000
+          this.translate.get('ROW_UPDATE_SUCCESS').subscribe((message) => {
+            this.snackBar.open(message, this.translate.instant('CLOSE'), {
+              duration: 3000
+            });
           });
           this.router.navigate(['/admin/rows/list'], { queryParams: { sectorId: this.sectorId, arenaId: this.arenaId } });
         },
         error: (err) => {
-          const errorMessage = err?.error?.message || 'Failed to update row';
-          this.snackBar.open(errorMessage, 'Close', {
+          const errorMessage = err?.error?.message || this.translate.instant('ROW_UPDATE_FAILURE');
+          this.snackBar.open(errorMessage, this.translate.instant('CLOSE'), {
             duration: 3000,
             panelClass: 'snackbar-error',
           });
@@ -96,14 +101,16 @@ export class RowFormComponent implements OnInit {
     } else {
       this.rowService.createRow(this.sectorId, row).subscribe({
         next: () => {
-          this.snackBar.open('Row created successfully', 'Close', {
-            duration: 3000
+          this.translate.get('ROW_CREATE_SUCCESS').subscribe((message) => {
+            this.snackBar.open(message, this.translate.instant('CLOSE'), {
+              duration: 3000
+            });
           });
           this.router.navigate(['/admin/rows/list'], { queryParams: { sectorId: this.sectorId, arenaId: this.arenaId } });
         },
         error: (err) => {
-          const errorMessage = err?.error?.message || 'Failed to create row';
-          this.snackBar.open(errorMessage, 'Close', {
+          const errorMessage = err?.error?.message || this.translate.instant('ROW_CREATE_FAILURE');
+          this.snackBar.open(errorMessage, this.translate.instant('CLOSE'), {
             duration: 3000,
             panelClass: 'snackbar-error',
           });

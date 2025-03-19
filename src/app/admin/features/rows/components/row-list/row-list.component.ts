@@ -15,6 +15,8 @@ import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component'; 
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-row-list',
@@ -33,7 +35,8 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
     MatButtonModule,
     NgIf,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ]
 })
 export class RowListComponent implements OnInit {
@@ -48,37 +51,55 @@ export class RowListComponent implements OnInit {
 
   @ViewChild(MatSort) sort!: MatSort;
 
-  filterConfig: FilterConfig[] = [
-    { label: 'Row Number Sort Order', formControlName: 'rowNumberOrder', type: 'select', options: [
-      { value: '', viewValue: '-- Sorting --' },
-      { value: 'ASC', viewValue: 'Ascending' },
-      { value: 'DESC', viewValue: 'Descending' }
-    ]},
-    { label: 'Seats Number Sort Order', formControlName: 'seatsNumbOrder', type: 'select', options: [
-      { value: '', viewValue: '-- Sorting --' },
-      { value: 'ASC', viewValue: 'Ascending' },
-      { value: 'DESC', viewValue: 'Descending' }
-    ]},
-  ];
-  
   filters = {
     rowNumberOrder: '',
     seatsNumbOrder: ''
   };
 
+  filterConfig: FilterConfig[] = [];
+  private langChangeSubscription!: Subscription;
+
   constructor(
     private rowService: RowService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
+    this.updateFilterConfig();
+    
+    this.langChangeSubscription = this.translate.onLangChange.subscribe(() => {
+      this.updateFilterConfig();
+    });
+
     this.route.queryParams.subscribe(params => {
       this.sectorId = +params['sectorId'] || 0;
       this.arenaId = +params['arenaId'] || 0;
       this.loadRows();
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.langChangeSubscription) {
+      this.langChangeSubscription.unsubscribe();
+    }
+  }
+
+  updateFilterConfig(): void {
+    this.filterConfig = [
+      { label: this.translate.instant('FILTER_ROW_SORT'), formControlName: 'rowNumberOrder', type: 'select', options: [
+        { value: '', viewValue: this.translate.instant('FILTER_SORTING') },
+        { value: 'ASC', viewValue: this.translate.instant('FILTER_ASCENDING') },
+        { value: 'DESC', viewValue: this.translate.instant('FILTER_DESCENDING') }
+      ]},
+      { label: this.translate.instant('FILTER_SEATS_SORT'), formControlName: 'seatsNumbOrder', type: 'select', options: [
+        { value: '', viewValue: this.translate.instant('FILTER_SORTING') },
+        { value: 'ASC', viewValue: this.translate.instant('FILTER_ASCENDING') },
+        { value: 'DESC', viewValue: this.translate.instant('FILTER_DESCENDING') }
+      ]}
+    ];
   }
 
   ngAfterViewInit(): void {
@@ -119,8 +140,10 @@ export class RowListComponent implements OnInit {
 
   deleteRow(id: number): void {
     this.rowService.deleteRow(id).subscribe(() => {
-      this.snackBar.open('Row deleted successfully', 'Close', {
-        duration: 3000
+      this.translate.get('ROW_DELETE_SUCCESS').subscribe((message) => {
+        this.snackBar.open(message, this.translate.instant('CLOSE'), {
+          duration: 3000,
+        });
       });
       this.loadRows();
     });

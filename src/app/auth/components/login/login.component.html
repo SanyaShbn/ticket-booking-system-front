@@ -2,25 +2,25 @@
 
 <div class="login-container">
   <mat-card class="login-card">
-    <mat-card-title style="margin: 5px;">Login</mat-card-title>
+    <mat-card-title style="margin: 5px;">{{ 'LOGIN_CARD_TITLE' | translate }}</mat-card-title>
     <mat-card-content>
       <form (submit)="onSubmit()" #loginForm="ngForm">
         <mat-form-field appearance="outline" class="form-item">
-          <mat-label>Email</mat-label>
+          <mat-label>{{ 'EMAIL_LABEL' | translate }}</mat-label>
           <input matInput type="email" [(ngModel)]="email" name="email" autocomplete="username" required>
         </mat-form-field>
         <mat-form-field appearance="outline" class="form-item">
-          <mat-label>Password</mat-label>
+          <mat-label>{{ 'PASSWORD_LABEL' | translate }}</mat-label>
           <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="password" name="password" autocomplete="current-password" required>
           <button type="button" mat-icon-button matSuffix (click)="togglePasswordVisibility()" [attr.aria-label]="'Toggle password visibility'">
             <mat-icon>{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
           </button>
         </mat-form-field>
-        <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid">Login</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid">{{ 'LOGIN_BUTTON' | translate }}</button>
       </form>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-button color="accent" (click)="navigateToRegister()">Register</button>
+      <button mat-button color="accent" (click)="navigateToRegister()">{{ 'REGISTER_BUTTON' | translate }}</button>
     </mat-card-actions>
   </mat-card>
 </div>

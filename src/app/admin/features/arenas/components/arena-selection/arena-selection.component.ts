@@ -12,6 +12,8 @@ import { CommonModule } from '@angular/common';
 import { NgIf } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component'; 
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-arena-selection',
@@ -26,7 +28,8 @@ import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filt
     MatCardModule,
     MatButtonModule,
     NgIf,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslateModule
   ]
 })
 export class ArenaSelectionComponent implements OnInit, AfterViewInit {
@@ -40,32 +43,54 @@ export class ArenaSelectionComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatSort) sort!: MatSort;
 
-  filterConfig: FilterConfig[] = [
-      { label: 'City', formControlName: 'city', type: 'input'},
-      { label: 'Capacity Sort Order', formControlName: 'capacitySortOrder', type: 'select', options: [
-        { value: '', viewValue: '-- Sorting --' },
-        { value: 'ASC', viewValue: 'Ascending' },
-        { value: 'DESC', viewValue: 'Descending' }
-      ]},
-      { label: 'Seats Number Sort Order', formControlName: 'seatsNumbSortOrder', type: 'select', options: [
-        { value: '', viewValue: '-- Sorting --' },
-        { value: 'ASC', viewValue: 'Ascending' },
-        { value: 'DESC', viewValue: 'Descending' }
-      ]}
-    ];
-
   filters = {
     city: '',
     capacitySortOrder: '',
     seatsNumbSortOrder: ''
   };
 
-  constructor(private arenaService: ArenaService, private router: Router, private route: ActivatedRoute) { }
+  filterConfig: FilterConfig[] = [];
+  private langChangeSubscription!: Subscription;
+
+  constructor(
+    private arenaService: ArenaService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private translate: TranslateService
+  ) { }
 
   ngOnInit(): void {
+    this.updateFilterConfig();
+    
+    this.langChangeSubscription = this.translate.onLangChange.subscribe(() => {
+      this.updateFilterConfig();
+    });
+
     this.route.data.subscribe(data => {
       this.navigateTo = data['navigateTo'] || this.navigateTo;
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.langChangeSubscription) {
+      this.langChangeSubscription.unsubscribe();
+    }
+  }
+
+  updateFilterConfig(): void {
+    this.filterConfig = [
+      { label: this.translate.instant('FILTER_CITY'), formControlName: 'city', type: 'input' },
+      { label: this.translate.instant('FILTER_CAPACITY_SORT'), formControlName: 'capacitySortOrder', type: 'select', options: [
+        { value: '', viewValue: this.translate.instant('FILTER_SORTING') },
+        { value: 'ASC', viewValue: this.translate.instant('FILTER_ASCENDING') },
+        { value: 'DESC', viewValue: this.translate.instant('FILTER_DESCENDING') }
+      ]},
+      { label: this.translate.instant('FILTER_SEATS_SORT'), formControlName: 'seatsNumbSortOrder', type: 'select', options: [
+        { value: '', viewValue: this.translate.instant('FILTER_SORTING') },
+        { value: 'ASC', viewValue: this.translate.instant('FILTER_ASCENDING') },
+        { value: 'DESC', viewValue: this.translate.instant('FILTER_DESCENDING') }
+      ]}
+    ];
   }
 
   ngAfterViewInit(): void {

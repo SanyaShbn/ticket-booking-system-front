@@ -12,6 +12,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TopBarComponent } from '../../shared/top-bar/top-bar.component';
 import { AuthService } from '../../auth/services/auth.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchase-form',
@@ -24,7 +26,8 @@ import { AuthService } from '../../auth/services/auth.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    TopBarComponent
+    TopBarComponent,
+    TranslateModule
   ]
 })
 export class PurchaseFormComponent {
@@ -39,7 +42,8 @@ export class PurchaseFormComponent {
     private http: HttpClient,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar,
-    private authService: AuthService
+    private authService: AuthService,
+    private translate: TranslateService
   ) {}
   
   ngOnInit(): void {
@@ -70,7 +74,9 @@ export class PurchaseFormComponent {
 
   submitPurchase(): void {
     if (!this.userId) {
-      this.showNotification('User ID not available. Please try again later.', 'error');
+      this.translate.get('USER_ID_UNAVAILABLE').subscribe((message) => {
+        this.showNotification(message, 'error');
+      });
       return;
     }
 
@@ -80,20 +86,26 @@ export class PurchaseFormComponent {
     this.http.post(apiUrl, {}, { params, responseType: 'text' }).subscribe(
       (response: string) => {
         console.log('Purchase successful:', response);
-        this.showNotification('Purchase Successful', 'success');
+        this.translate.get('PURCHASE_SUCCESS').subscribe((message) => {
+          this.showNotification(message, 'success');
+        });
         this.router.navigate(['/purchasedTickets'], { queryParams: { eventId: this.eventId } });
       },
       (error) => {
         console.error('Error during purchase:', error);
-        this.showNotification('Purchase Failed: Insufficient Funds', 'error');
+        this.translate.get('PURCHASE_FAILURE').subscribe((message) => {
+          this.showNotification(message, 'error');
+        });
       }
     );    
   }
 
   showNotification(message: string, type: 'success' | 'error'): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-      panelClass: type === 'success' ? 'snackbar-success' : 'snackbar-error'
+    this.translate.get('CLOSE').subscribe((closeText) => {
+      this.snackBar.open(message, closeText, {
+        duration: 3000,
+        panelClass: type === 'success' ? 'snackbar-success' : 'snackbar-error'
+      });
     });
   }
 

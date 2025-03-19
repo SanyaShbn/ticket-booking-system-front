@@ -19,6 +19,7 @@ import { startWith, map, switchMap, debounceTime, distinctUntilChanged } from 'r
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { MatDialogModule, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-sport-event-form',
@@ -36,7 +37,8 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
     MatCardModule,
     MatAutocompleteModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ]
 })
 export class SportEventFormComponent implements OnInit {
@@ -58,7 +60,8 @@ export class SportEventFormComponent implements OnInit {
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private translate: TranslateService  
   ) {}
 
   ngOnInit(): void {
@@ -149,14 +152,16 @@ export class SportEventFormComponent implements OnInit {
     if (this.isEditMode) {
       this.sportEventService.updateSportEvent(this.arenaId, this.eventId, event).subscribe({
         next: () => {
-          this.snackBar.open('Sport event updated successfully', 'Close', {
-            duration: 3000
+          this.translate.get('SPORT_EVENT_UPDATE_SUCCESS').subscribe((message) => {
+            this.snackBar.open(message, this.translate.instant('CLOSE'), {
+              duration: 3000
+            });
           });
           this.router.navigate(['/admin/sport-events']);
         },
         error: (err) => {
-          const errorMessage = err?.error?.message || 'Failed to update sport event';
-          this.snackBar.open(errorMessage, 'Close', {
+          const errorMessage = err?.error?.message || this.translate.instant('SPORT_EVENT_UPDATE_FAILURE');
+          this.snackBar.open(errorMessage, this.translate.instant('CLOSE'), {
             duration: 3000,
             panelClass: 'snackbar-error',
           });
@@ -165,14 +170,16 @@ export class SportEventFormComponent implements OnInit {
     } else {
       this.sportEventService.createSportEvent(this.arenaId, event).subscribe({
         next: () => {
-          this.snackBar.open('Sport event created successfully', 'Close', {
-            duration: 3000
+          this.translate.get('SPORT_EVENT_CREATE_SUCCESS').subscribe((message) => {
+            this.snackBar.open(message, this.translate.instant('CLOSE'), {
+              duration: 3000
+            });
           });
           this.router.navigate(['/admin/sport-events']);
         },
         error: (err) => {
-          const errorMessage = err?.error?.message || 'Failed to create sport event';
-          this.snackBar.open(errorMessage, 'Close', {
+          const errorMessage = err?.error?.message || this.translate.instant('SPORT_EVENT_CREATE_FAILURE');
+          this.snackBar.open(errorMessage, this.translate.instant('CLOSE'), {
             duration: 3000,
             panelClass: 'snackbar-error',
           });
@@ -205,17 +212,19 @@ export class SportEventFormComponent implements OnInit {
   }
 
   confirmDeletePoster(): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      width: '250px',
-      data: { message: 'Are you sure you want to delete the poster image?' }
+    this.translate.get('CONFIRM_DELETE_POSTER_MESSAGE').subscribe((message) => {
+      const dialogRef = this.dialog.open(ConfirmDialog, {
+        width: '250px',
+        data: { message }
+      });
+  
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.deletePosterImage();
+        }
+      });
     });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.deletePosterImage();
-      }
-    });
-  }
+  }  
 
   deletePosterImage(): void {
     if (this.eventId && this.isEditMode) {
@@ -255,14 +264,15 @@ export class SportEventFormComponent implements OnInit {
   selector: 'confirm-dialog',
   imports: [
     MatButtonModule,
-    MatDialogModule
+    MatDialogModule,
+    TranslateModule
   ],
   template: `
-    <h1 mat-dialog-title>Confirmation</h1>
-    <div mat-dialog-content>{{data.message}}</div>
+   <h1 mat-dialog-title>{{ 'CONFIRMATION_TITLE' | translate }}</h1>
+    <div mat-dialog-content>{{ data.message }}</div>
     <div mat-dialog-actions>
-      <button mat-button (click)="onNoClick()">No</button>
-      <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Yes</button>
+      <button mat-button (click)="onNoClick()">{{ 'NO' | translate }}</button>
+      <button mat-button [mat-dialog-close]="true" cdkFocusInitial>{{ 'YES' | translate }}</button>
     </div>
   `,
 })

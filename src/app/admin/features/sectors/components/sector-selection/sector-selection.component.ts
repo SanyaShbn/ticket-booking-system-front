@@ -12,6 +12,8 @@ import { CommonModule } from '@angular/common';
 import { NgIf } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component'; 
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sector-selection',
@@ -26,7 +28,8 @@ import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filt
     MatCardModule,
     MatButtonModule,
     NgIf,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslateModule
   ]
 })
 export class SectorSelectionComponent implements OnInit, AfterViewInit {
@@ -39,37 +42,59 @@ export class SectorSelectionComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatSort) sort!: MatSort;
 
-  filterConfig: FilterConfig[] = [
-    { label: 'Name Sort Order', formControlName: 'nameSortOrder', type: 'select', options: [
-      { value: '', viewValue: '-- Sorting --' },
-      { value: 'ASC', viewValue: 'Ascending' },
-      { value: 'DESC', viewValue: 'Descending' }
-    ]},
-    { label: 'Max Rows Number Sort Order', formControlName: 'maxRowsNumbSortOrder', type: 'select', options: [
-      { value: '', viewValue: '-- Sorting --' },
-      { value: 'ASC', viewValue: 'Ascending' },
-      { value: 'DESC', viewValue: 'Descending' }
-    ]},
-    { label: 'Max Seats Number Sort Order', formControlName: 'maxSeatsNumbSortOrder', type: 'select', options: [
-      { value: '', viewValue: '-- Sorting --' },
-      { value: 'ASC', viewValue: 'Ascending' },
-      { value: 'DESC', viewValue: 'Descending' }
-    ]}
-  ];
-
   filters = {
     nameSortOrder: '',
     maxRowsNumbSortOrder: '',
     maxSeatsNumbSortOrder: ''
   };
 
-  constructor(private sectorService: SectorService, private router: Router, private route: ActivatedRoute) { }
+  filterConfig: FilterConfig[] = [];
+  private langChangeSubscription!: Subscription;
+  
+  constructor(
+    private sectorService: SectorService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private translate: TranslateService    
+  ) { }
 
   ngOnInit(): void {
+    this.updateFilterConfig();
+    
+    this.langChangeSubscription = this.translate.onLangChange.subscribe(() => {
+      this.updateFilterConfig();
+    });
+
     this.route.queryParams.subscribe(params => {
       this.arenaId = +params['arenaId'] || 0;
       this.loadSectors();
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.langChangeSubscription) {
+      this.langChangeSubscription.unsubscribe();
+    }
+  }
+
+  updateFilterConfig(): void {
+    this.filterConfig = [
+      { label: this.translate.instant('FILTER_NAME_SORT'), formControlName: 'nameSortOrder', type: 'select', options: [
+        { value: '', viewValue: this.translate.instant('FILTER_SORTING') },
+        { value: 'ASC', viewValue: this.translate.instant('FILTER_ASCENDING') },
+        { value: 'DESC', viewValue: this.translate.instant('FILTER_DESCENDING') }
+      ]},
+      { label: this.translate.instant('FILTER_MAX_ROWS_SORT'), formControlName: 'maxRowsNumbSortOrder', type: 'select', options: [
+        { value: '', viewValue: this.translate.instant('FILTER_SORTING') },
+        { value: 'ASC', viewValue: this.translate.instant('FILTER_ASCENDING') },
+        { value: 'DESC', viewValue: this.translate.instant('FILTER_DESCENDING') }
+      ]},
+      { label: this.translate.instant('FILTER_MAX_SEATS_SORT'), formControlName: 'maxSeatsNumbSortOrder', type: 'select', options: [
+        { value: '', viewValue: this.translate.instant('FILTER_SORTING') },
+        { value: 'ASC', viewValue: this.translate.instant('FILTER_ASCENDING') },
+        { value: 'DESC', viewValue: this.translate.instant('FILTER_DESCENDING') }
+      ]}
+    ];
   }
 
   ngAfterViewInit(): void {

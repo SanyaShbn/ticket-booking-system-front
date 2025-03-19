@@ -15,6 +15,7 @@ import { Observable } from 'rxjs';
 import { startWith, map, switchMap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { SeatService } from '../../services/seat.service';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-ticket-form',
@@ -29,7 +30,8 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
     MatButtonModule,
     MatCardModule,
     MatAutocompleteModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ]
 })
 export class TicketFormComponent implements OnInit {
@@ -49,7 +51,8 @@ export class TicketFormComponent implements OnInit {
     private seatService: SeatService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private translate: TranslateService 
   ) {}
 
   ngOnInit(): void {
@@ -116,14 +119,16 @@ export class TicketFormComponent implements OnInit {
     if (this.isEditMode) {
       this.ticketService.updateTicket(this.eventId, this.seatId, this.ticketId, ticket).subscribe({
         next: () => {
-          this.snackBar.open('Ticket updated successfully', 'Close', {
-            duration: 3000
+          this.translate.get('TICKET_UPDATE_SUCCESS').subscribe((message) => {
+            this.snackBar.open(message, this.translate.instant('CLOSE'), {
+              duration: 3000
+            });
           });
           this.router.navigate(['/admin/tickets/list'], { queryParams: { eventId: this.eventId } });
         },
         error: (err) => {
-          const errorMessage = err?.error?.message || 'Failed to update ticket';
-          this.snackBar.open(errorMessage, 'Close', {
+          const errorMessage = err?.error?.message || this.translate.instant('TICKET_UPDATE_FAILURE');
+          this.snackBar.open(errorMessage, this.translate.instant('CLOSE'), {
             duration: 3000,
             panelClass: 'snackbar-error',
           });
@@ -132,14 +137,16 @@ export class TicketFormComponent implements OnInit {
     } else {
       this.ticketService.createTicket(this.eventId, this.seatId, ticket).subscribe({
         next: () => {
-          this.snackBar.open('Ticket created successfully', 'Close', {
-            duration: 3000
+          this.translate.get('TICKET_CREATE_SUCCESS').subscribe((message) => {
+            this.snackBar.open(message, this.translate.instant('CLOSE'), {
+              duration: 3000
+            });
           });
           this.router.navigate(['/admin/tickets/list'], { queryParams: { eventId: this.eventId } });
         },
         error: (err) => {
-          const errorMessage = err?.error?.message || 'Failed to create ticket';
-          this.snackBar.open(errorMessage, 'Close', {
+          const errorMessage = err?.error?.message || this.translate.instant('TICKET_CREATE_FAILURE');
+          this.snackBar.open(errorMessage, this.translate.instant('CLOSE'), {
             duration: 3000,
             panelClass: 'snackbar-error',
           });
@@ -154,9 +161,12 @@ export class TicketFormComponent implements OnInit {
   
   
   displaySeatFn(seat: any): string {
-    return seat ? 'Sector: ' + seat.row.sector.sectorName + ', Row: ' + seat.row.rowNumber + ', Seat №' + seat.seatNumber 
-    : '';
-  }
+    return seat 
+      ? `${this.translate.instant('SECTOR_LABEL')} ${seat.row.sector.sectorName}, ` +
+        `${this.translate.instant('ROW_LABEL')} ${seat.row.rowNumber}, ` +
+        `${this.translate.instant('SEAT_LABEL')} №${seat.seatNumber}`
+      : '';
+  }  
  
   onSeatSelected(selectedSeat: Seat): void {
     this.selectedSeat = selectedSeat;

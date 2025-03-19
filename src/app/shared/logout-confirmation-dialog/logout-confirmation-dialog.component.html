@@ -1,8 +1,10 @@
-<h2 mat-dialog-title>Confirm Logout</h2>
+<h2 mat-dialog-title>{{ 'LOGOUT_DIALOG_TITLE' | translate }}</h2>
 <mat-dialog-content>
-  Are you sure you want to log out?
+  {{ 'LOGOUT_DIALOG_CONTENT' | translate }}
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button [mat-dialog-close]="false">Cancel</button>
-  <button mat-raised-button color="warn" [mat-dialog-close]="true">Logout</button>
+  <button mat-button [mat-dialog-close]="false">{{ 'BUTTON_CANCEL' | translate }}</button>
+  <button mat-raised-button color="warn" [mat-dialog-close]="true">
+    {{ 'LOGOUT_DIALOG_LOGOUT_BUTTON' | translate }}
+  </button>
 </mat-dialog-actions>

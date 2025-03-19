@@ -1,55 +1,64 @@
-<app-top-bar [title]="'TicketBookingApp'"/>
+<app-top-bar [title]="'TicketBookingApp'"></app-top-bar>
 
 <mat-toolbar color="primary">
-  <button mat-raised-button color="primary" (click)="goBack()" style="margin-left: 10px;">Back to Sport Event Selection</button>
+    <button mat-raised-button color="primary" (click)="goBack()" style="margin-left: 10px;">
+        {{ 'TICKET_SELECTOR_BACK_BUTTON' | translate }}
+    </button>
 </mat-toolbar>
 
 <div class="ticket-selector-container">
-  <div class="arena-map" *ngIf="!isLoading && sectors.length > 0">
-    <h2>Choose Your Seat</h2>
-    <div *ngFor="let sector of sectors" class="arena-sector">
-      <h3>Sector: {{ sector.name }}</h3>
-      <div *ngFor="let row of sector.rows" class="arena-row">
-        <div
-          *ngFor="let seat of row.seats"
-          class="seat"
-          [ngClass]="{
-            'available': seat.status === 'AVAILABLE',
-            'reserved': seat.status === 'RESERVED',
-            'sold': seat.status === 'SOLD',
-            'out-of-stock': seat.status === 'OUT_OF_STOCK'
-          }"
-          (click)="toggleSeatSelection(seat)"
-          [title]="getSeatTooltip(seat)"
-        >
-          {{ seat.seatNumber }}
+    <div class="arena-map" *ngIf="!isLoading && sectors.length > 0">
+        <h2>{{ 'TICKET_SELECTOR_PAGE_TITLE' | translate }}</h2>
+        <div *ngFor="let sector of sectors" class="arena-sector">
+            <h3>{{ 'TICKET_SELECTOR_SECTOR_TITLE' | translate: { sectorName: sector.name } }}</h3>
+            <div *ngFor="let row of sector.rows" class="arena-row">
+                <div
+                    *ngFor="let seat of row.seats"
+                    class="seat"
+                    [ngClass]="{
+                        'available': seat.status === 'AVAILABLE',
+                        'reserved': seat.status === 'RESERVED',
+                        'sold': seat.status === 'SOLD',
+                        'out-of-stock': seat.status === 'OUT_OF_STOCK'
+                    }"
+                    (click)="toggleSeatSelection(seat)"
+                    [title]="getSeatTooltip(seat)"
+                >
+                    {{ seat.seatNumber }}
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <div class="user-cart" *ngIf="!isLoading">
-    <h2>Your Cart ({{ cartItems.length }} Tickets)</h2>
-    <ul>
-      <li *ngFor="let cartItem of cartItems">
-        <span>
-          Sector: {{ cartItem.sectorName }},
-          Row: {{ cartItem.rowNumber }},
-          Seat: {{ cartItem.seatNumber }},
-          Price: {{ cartItem.price }} BYN
-        </span>
-        <button class="remove-item-button" (click)="removeFromCart(getSeatByCartItem(cartItem))">Remove</button>
-      </li>
-    </ul>
-    <p>Total Price: {{ totalPrice }} BYN</p>
-    <button class="clear-cart-button" (click)="clearCart()" [disabled]="cartItems.length === 0">Clear Cart</button>
-    <button class="checkout-button" (click)="checkout()" [disabled]="cartItems.length === 0">Checkout</button>
-  </div>
+    <div class="user-cart" *ngIf="!isLoading">
+        <h2>{{ 'TICKET_SELECTOR_USER_CART_TITLE' | translate: { count: cartItems.length } }}</h2>
+        <ul>
+            <li *ngFor="let cartItem of cartItems">
+                <span>
+                    {{ 'TICKET_SELECTOR_USER_CART_ITEM' | translate: {
+                        sector: cartItem.sectorName,
+                        row: cartItem.rowNumber,
+                        seat: cartItem.seatNumber,
+                        price: cartItem.price
+                    } }}
+                </span>
+                <button class="remove-item-button" (click)="removeFromCart(getSeatByCartItem(cartItem))">
+                    {{ 'TICKET_SELECTOR_CART_REMOVE' | translate }}
+                </button>
+            </li>
+        </ul>
+        <p>{{ 'TICKET_SELECTOR_TOTAL_PRICE' | translate: { totalPrice: totalPrice } }}</p>
+        <button class="clear-cart-button" (click)="clearCart()" [disabled]="cartItems.length === 0">
+            {{ 'TICKET_SELECTOR_CART_CLEAR' | translate }}
+        </button>
+        <button class="checkout-button" (click)="checkout()" [disabled]="cartItems.length === 0">
+            {{ 'TICKET_SELECTOR_CART_CHECKOUT' | translate }}
+        </button>
+    </div>
 
-  <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="100" style="margin: 20px auto;"></mat-progress-spinner>
+    <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="100" style="margin: 20px auto;"></mat-progress-spinner>
 
-  <div *ngIf="!isLoading && sectors.length === 0">
-      <p>No data available</p>
-  </div>
-
+    <div *ngIf="!isLoading && sectors.length === 0">
+        <p>{{ 'TICKET_SELECTOR_NO_DATA' | translate }}</p>
+    </div>
 </div>

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class RoleGuard implements CanActivate {
   constructor(
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private translate: TranslateService
   ) {}
 
   canActivate(route: any): boolean {
@@ -20,9 +22,11 @@ export class RoleGuard implements CanActivate {
       return true;
     }
 
-    this.snackBar.open('Access Denied: You do not have the required role', 'Close', {
-      duration: 3000,
-      panelClass: 'snackbar-error'
+    this.translate.get('ACCESS_DENIED_MESSAGE').subscribe((message) => {
+      this.snackBar.open(message, this.translate.instant('CLOSE'), {
+        duration: 3000,
+        panelClass: 'snackbar-error'
+      });
     });
 
     return false;

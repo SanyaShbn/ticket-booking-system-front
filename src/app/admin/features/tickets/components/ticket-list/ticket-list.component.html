@@ -1,56 +1,60 @@
 <mat-toolbar color="primary">
-    <span>Tickets List</span>
-    <span class="spacer"></span>
-    <button mat-raised-button color="accent" (click)="addTicket()" style="margin-left: 10px;">Add New Ticket</button>
-    <button mat-raised-button color="primary" (click)="goBack()" style="margin-left: 10px;">Back to Sport Event Selection</button>
+  <span>{{ 'TICKETS_LIST_TITLE' | translate }}</span>
+  <span class="spacer"></span>
+  <button mat-raised-button color="accent" (click)="addTicket()" style="margin-left: 10px;">
+      {{ 'TICKETS_ADD_BUTTON' | translate }}
+  </button>
+  <button mat-raised-button color="primary" (click)="goBack()" style="margin-left: 10px;">
+      {{ 'TICKETS_BACK_BUTTON' | translate }}
+  </button>
 </mat-toolbar>
 
 <app-filter [filterConfig]="filterConfig" (filterChanged)="onFilterChanged($event)"></app-filter>
 
 <div class="mat-elevation-z8">
-    <mat-table [dataSource]="dataSource" matSort>
+  <mat-table [dataSource]="dataSource" matSort>
       <ng-container matColumnDef="price">
-        <mat-header-cell *matHeaderCellDef>Ticket Price</mat-header-cell>
-        <mat-cell *matCellDef="let ticket">{{ ticket.price }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef>{{ 'TICKETS_TABLE_PRICE' | translate }}</mat-header-cell>
+          <mat-cell *matCellDef="let ticket">{{ ticket.price }}</mat-cell>
       </ng-container>
-  
+
       <ng-container matColumnDef="status">
-        <mat-header-cell *matHeaderCellDef>Ticket Status</mat-header-cell>
-        <mat-cell *matCellDef="let ticket">{{ ticket.status }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef>{{ 'TICKETS_TABLE_STATUS' | translate }}</mat-header-cell>
+          <mat-cell *matCellDef="let ticket">{{ ticket.status }}</mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="seat">
-        <mat-header-cell *matHeaderCellDef>Seat Info</mat-header-cell>
-        <mat-cell *matCellDef="let ticket">{{ ticket.seatInfo }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef>{{ 'TICKETS_TABLE_SEAT_INFO' | translate }}</mat-header-cell>
+          <mat-cell *matCellDef="let ticket">{{ ticket.seatInfo }}</mat-cell>
       </ng-container>
-  
+
       <ng-container matColumnDef="actions">
-        <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-        <mat-cell *matCellDef="let ticket">
-          <button mat-icon-button (click)="editTicket(ticket)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button (click)="deleteTicket(ticket.id)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </mat-cell>
+          <mat-header-cell *matHeaderCellDef>{{ 'TICKETS_TABLE_ACTIONS' | translate }}</mat-header-cell>
+          <mat-cell *matCellDef="let ticket">
+              <button mat-icon-button (click)="editTicket(ticket)">
+                  <mat-icon>{{ 'TICKETS_ACTION_EDIT' | translate }}</mat-icon>
+              </button>
+              <button mat-icon-button (click)="deleteTicket(ticket.id)">
+                  <mat-icon>{{ 'TICKETS_ACTION_DELETE' | translate }}</mat-icon>
+              </button>
+          </mat-cell>
       </ng-container>
-  
+
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-    </mat-table>
+  </mat-table>
 
-    <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="50" style="margin: 20px auto;"></mat-progress-spinner>
+  <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="50" style="margin: 20px auto;"></mat-progress-spinner>
 
-    <div style="display: flex; justify-content: center;" *ngIf="!isLoading && dataSource.data.length === 0">
-        <p>No data available</p>
-    </div>
-  
-    <app-paginator 
+  <div style="display: flex; justify-content: center;" *ngIf="!isLoading && dataSource.data.length === 0">
+      <p>{{ 'TICKETS_NO_DATA' | translate }}</p>
+  </div>
+
+  <app-paginator 
       [page]="page" 
       [size]="size" 
       [totalElements]="totalElements" 
       (pageChange)="onPageChange($event)" 
       (sizeChange)="onSizeChange($event)">
-    </app-paginator>
-</div>  
+  </app-paginator>
+</div>

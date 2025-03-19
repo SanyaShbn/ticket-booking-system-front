@@ -10,6 +10,8 @@ import { MatButton } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TopBarComponent } from '../../../../shared/top-bar/top-bar.component';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-ticket-selector',
@@ -22,7 +24,8 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
     MatButton,
     MatProgressSpinnerModule,
     TopBarComponent,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ],
 })
 export class TicketSelectorComponent implements OnInit {
@@ -42,7 +45,8 @@ export class TicketSelectorComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -173,14 +177,18 @@ export class TicketSelectorComponent implements OnInit {
       error: (err) => {
         console.error('Error adding to cart:', err);
         if (err.status === 409) {
-          this.snackBar.open('This seat is already being reserved by someone else. We apologize for the inconvenience caused.', 'Close', {
-            duration: 3000,
-            panelClass: 'snackbar-error',
+          this.translate.get('SEAT_RESERVATION_ERROR').subscribe((message) => {
+            this.snackBar.open(message, this.translate.instant('CLOSE'), {
+              duration: 3000,
+              panelClass: 'snackbar-error',
+            });
           });
         } else {
-          this.snackBar.open('An error occurred while adding the seat to the cart.', 'Close', {
-            duration: 3000,
-            panelClass: 'snackbar-error',
+          this.translate.get('SEAT_CART_ERROR').subscribe((message) => {
+            this.snackBar.open(message, this.translate.instant('CLOSE'), {
+              duration: 3000,
+              panelClass: 'snackbar-error',
+            });
           });
         }
        }
@@ -247,17 +255,26 @@ export class TicketSelectorComponent implements OnInit {
     this.sectors = grouped;
   }
 
-  getSeatTooltip(seat: any): string { 
-    if (seat.status === 'OUT_OF_STOCK') { 
-      return `Sector: ${seat.sectorName}, Row: ${seat.rowNumber}, Seat: ${seat.seatNumber}, Status: OUT_OF_STOCK`; 
+  getSeatTooltip(seat: any): string {
+    if (seat.status === 'OUT_OF_STOCK') {
+      return `${this.translate.instant('SECTOR_LABEL')}: ${seat.sectorName}, ` +
+             `${this.translate.instant('ROW_LABEL')}: ${seat.rowNumber}, ` +
+             `${this.translate.instant('SEAT_LABEL')}: ${seat.seatNumber}, ` +
+             `${this.translate.instant('STATUS_LABEL')}: ${this.translate.instant('STATUS_OUT_OF_STOCK')}`;
     }
-    if (seat.status === 'SOLD') { 
-      return `Sector: ${seat.sectorName}, Row: ${seat.rowNumber}, Seat: ${seat.seatNumber}, Status: SOLD`; 
-    }  
-    return `Sector: ${seat.sectorName}, Row: ${seat.rowNumber}, Seat: ${seat.seatNumber}${ seat.price 
-      ? `, Price: ${seat.price} BYN` 
-      : '' }`; 
-  }
+    if (seat.status === 'SOLD') {
+      return `${this.translate.instant('SECTOR_LABEL')}: ${seat.sectorName}, ` +
+             `${this.translate.instant('ROW_LABEL')}: ${seat.rowNumber}, ` +
+             `${this.translate.instant('SEAT_LABEL')}: ${seat.seatNumber}, ` +
+             `${this.translate.instant('STATUS_LABEL')}: ${this.translate.instant('STATUS_SOLD')}`;
+    }
+    return `${this.translate.instant('SECTOR_LABEL')}: ${seat.sectorName}, ` +
+           `${this.translate.instant('ROW_LABEL')}: ${seat.rowNumber}, ` +
+           `${this.translate.instant('SEAT_LABEL')}: ${seat.seatNumber}` +
+           (seat.price
+             ? `, ${this.translate.instant('PRICE_LABEL')}: ${seat.price} BYN`
+             : '');
+  }  
 
   goBack(): void {
     this.router.navigate(['/view-available-events']);

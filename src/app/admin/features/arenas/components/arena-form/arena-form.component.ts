@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { NgIf } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-arena-form',
@@ -24,10 +25,12 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
     ReactiveFormsModule,
     NgIf,
     HttpClientModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ]
 })
 export class ArenaFormComponent implements OnInit {
+  isEditMode = false;
   arenaForm: FormGroup;
   arenaId: number | null = null;
 
@@ -36,7 +39,8 @@ export class ArenaFormComponent implements OnInit {
     private arenaService: ArenaService,
     private route: ActivatedRoute,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private translate: TranslateService
   ) {
     this.arenaForm = this.fb.group({
       name: ['', Validators.required],
@@ -48,6 +52,7 @@ export class ArenaFormComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
+      this.isEditMode = !!id;
       if (id) {
         this.arenaId = +id;
         this.arenaService.getArena(this.arenaId).subscribe(arena => {
@@ -63,14 +68,17 @@ export class ArenaFormComponent implements OnInit {
       if (this.arenaId) {
         this.arenaService.updateArena(this.arenaId, arena).subscribe({
           next: () => {
-            this.snackBar.open('Arena updated successfully', 'Close', {
-              duration: 3000,
+            this.translate.get('ARENA_UPDATE_SUCCESS').subscribe((message) => {
+              this.snackBar.open(message, this.translate.instant('CLOSE'), {
+                duration: 3000,
+              });
             });
             this.router.navigate(['/admin/arenas']);
           },
           error: (err) => {
-            const errorMessage = err?.error?.message || 'Failed to update arena';
-            this.snackBar.open(errorMessage, 'Close', {
+            const errorMessage =
+            err?.error?.message || this.translate.instant('ARENA_UPDATE_FAILURE');
+            this.snackBar.open(errorMessage, this.translate.instant('CLOSE'), {
               duration: 3000,
               panelClass: 'snackbar-error',
             });
@@ -79,14 +87,17 @@ export class ArenaFormComponent implements OnInit {
       } else {
         this.arenaService.createArena(arena).subscribe({
           next: () => {
-            this.snackBar.open('Arena created successfully', 'Close', {
-              duration: 3000,
+            this.translate.get('ARENA_CREATE_SUCCESS').subscribe((message) => {
+              this.snackBar.open(message, this.translate.instant('CLOSE'), {
+                duration: 3000,
+              });
             });
             this.router.navigate(['/admin/arenas']);
           },
           error: (err) => {
-            const errorMessage = err?.error?.message || 'Failed to create arena';
-            this.snackBar.open(errorMessage, 'Close', {
+            const errorMessage =
+            err?.error?.message || this.translate.instant('ARENA_CREATE_FAILURE');
+            this.snackBar.open(errorMessage, this.translate.instant('CLOSE'), {
               duration: 3000,
               panelClass: 'snackbar-error',
             });

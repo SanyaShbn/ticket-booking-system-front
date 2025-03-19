@@ -18,6 +18,8 @@ import { NgIf } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FilterConfig, FilterComponent } from '../../../../../shared/filter/filter.component';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar'; 
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-arena-list',
@@ -37,7 +39,8 @@ import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
     NgIf,
     MatProgressSpinnerModule,
     FilterComponent,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ]
 })
 export class ArenaListComponent implements OnInit {
@@ -56,23 +59,45 @@ export class ArenaListComponent implements OnInit {
     seatsNumbSortOrder: ''
   };
 
-  filterConfig: FilterConfig[] = [
-    { label: 'City', formControlName: 'city', type: 'input'},
-    { label: 'Capacity Sort Order', formControlName: 'capacitySortOrder', type: 'select', options: [
-      { value: '', viewValue: '-- Sorting --' },
-      { value: 'ASC', viewValue: 'Ascending' },
-      { value: 'DESC', viewValue: 'Descending' }
-    ]},
-    { label: 'Seats Number Sort Order', formControlName: 'seatsNumbSortOrder', type: 'select', options: [
-      { value: '', viewValue: '-- Sorting --' },
-      { value: 'ASC', viewValue: 'Ascending' },
-      { value: 'DESC', viewValue: 'Descending' }
-    ]}
-  ];
+  filterConfig: FilterConfig[] = [];
+  private langChangeSubscription!: Subscription;
 
-  constructor(private arenaService: ArenaService, private router: Router, private snackBar: MatSnackBar) { }
+  constructor(
+    private arenaService: ArenaService,
+    private router: Router,
+    private snackBar: MatSnackBar,
+    private translate: TranslateService
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.updateFilterConfig();
+
+    this.langChangeSubscription = this.translate.onLangChange.subscribe(() => {
+      this.updateFilterConfig();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.langChangeSubscription) {
+      this.langChangeSubscription.unsubscribe();
+    }
+  }
+
+  updateFilterConfig(): void {
+    this.filterConfig = [
+      { label: this.translate.instant('FILTER_CITY'), formControlName: 'city', type: 'input' },
+      { label: this.translate.instant('FILTER_CAPACITY_SORT'), formControlName: 'capacitySortOrder', type: 'select', options: [
+        { value: '', viewValue: this.translate.instant('FILTER_SORTING') },
+        { value: 'ASC', viewValue: this.translate.instant('FILTER_ASCENDING') },
+        { value: 'DESC', viewValue: this.translate.instant('FILTER_DESCENDING') }
+      ]},
+      { label: this.translate.instant('FILTER_SEATS_SORT'), formControlName: 'seatsNumbSortOrder', type: 'select', options: [
+        { value: '', viewValue: this.translate.instant('FILTER_SORTING') },
+        { value: 'ASC', viewValue: this.translate.instant('FILTER_ASCENDING') },
+        { value: 'DESC', viewValue: this.translate.instant('FILTER_DESCENDING') }
+      ]}
+    ];
+  }
 
   ngAfterViewInit(): void {
     this.sort.sortChange.subscribe(() => {
@@ -119,8 +144,10 @@ export class ArenaListComponent implements OnInit {
 
   deleteArena(id: number): void {
     this.arenaService.deleteArena(id).subscribe(() => {
-      this.snackBar.open('Arena deleted successfully', 'Close', {
-        duration: 3000
+      this.translate.get('ARENA_DELETE_SUCCESS').subscribe((message) => {
+        this.snackBar.open(message, this.translate.instant('CLOSE'), {
+          duration: 3000,
+        });
       });
       this.loadArenas();
     });

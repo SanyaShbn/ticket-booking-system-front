@@ -1,53 +1,72 @@
 <mat-card>
   <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="fill">
-      <mat-label>Event Name</mat-label>
+      <mat-label>{{ 'EVENT_FORM_NAME_LABEL' | translate }}</mat-label>
       <input matInput id="eventName" formControlName="eventName" required>
-      <mat-error *ngIf="eventForm.get('eventName')?.hasError('required')">Event Name is required</mat-error>
+      <mat-error *ngIf="eventForm.get('eventName')?.hasError('required')">
+        {{ 'EVENT_FORM_NAME_REQUIRED' | translate }}
+      </mat-error>
     </mat-form-field>
+
     <div class="custom-datetime-container">
-      <label for="eventDateTime" class="custom-label">Event Date & Time</label>
+      <label for="eventDateTime" class="custom-label">
+        {{ 'EVENT_FORM_DATETIME_LABEL' | translate }}
+      </label>
       <input type="datetime-local" class="custom-input" id="eventDateTime" formControlName="eventDateTime" required step="60">
-      <div class="custom-error" *ngIf="eventForm.get('eventDateTime')?.hasError('required')">Event Date and Time is required</div>
-    </div>        
+      <div class="custom-error" *ngIf="eventForm.get('eventDateTime')?.hasError('required')">
+        {{ 'EVENT_FORM_DATETIME_REQUIRED' | translate }}
+      </div>
+    </div>
+
     <mat-form-field appearance="fill">
-      <mat-label>Arena</mat-label>
+      <mat-label>{{ 'EVENT_FORM_ARENA_LABEL' | translate }}</mat-label>
       <input type="text" matInput [formControlName]="'arena'" [matAutocomplete]="auto" required>
       <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayArenaFn" (optionSelected)="onArenaSelected($event.option.value)">
         <mat-option *ngFor="let arena of arenas$ | async" [value]="arena">
           {{ arena.name }}
         </mat-option>
       </mat-autocomplete>
-      <mat-error *ngIf="eventForm.get('arena')?.hasError('required')">Arena is required</mat-error>
+      <mat-error *ngIf="eventForm.get('arena')?.hasError('required')">
+        {{ 'EVENT_FORM_ARENA_REQUIRED' | translate }}
+      </mat-error>
     </mat-form-field>
 
     <div class="paginator">
-      <button mat-button type="button" (click)="onPageChange(page - 1)" [disabled]="page === 0">Previous</button>
-      <span>Page {{ page + 1 }} of {{ totalPages }}</span>
-      <button mat-button type="button" (click)="onPageChange(page + 1)" [disabled]="page + 1 >= totalPages">Next</button>
+      <button mat-button type="button" (click)="onPageChange(page - 1)" [disabled]="page === 0">
+        {{ 'EVENT_FORM_PAGINATOR_PREVIOUS' | translate }}
+      </button>
+      <span>
+        {{ 'EVENT_FORM_PAGINATOR_PAGE' | translate: { current: page + 1, total: totalPages } }}
+      </span>
+      <button mat-button type="button" (click)="onPageChange(page + 1)" [disabled]="page + 1 >= totalPages">
+        {{ 'EVENT_FORM_PAGINATOR_NEXT' | translate }}
+      </button>
     </div>
 
     <div *ngIf="isEditMode && posterImage$" style="text-align: center;">
       <img *ngIf="posterImage$ | async as posterUrl" [src]="posterUrl" alt="Poster" width="100" style="margin: 10px 0;">
-      <button mat-button type="button" color="warn" (click)="confirmDeletePoster()" style="margin-top: 10px;">Delete Poster</button>
+      <button mat-button type="button" color="warn" (click)="confirmDeletePoster()" style="margin-top: 10px;">
+        {{ 'EVENT_FORM_POSTER_DELETE_BUTTON' | translate }}
+      </button>
     </div>
 
     <div>
       <div class="custom-file-input">
         <input type="file" #fileInput (change)="onFileChange($event)" />
         <button mat-button type="button" class="file-button" (click)="fileInput.click()">
-          {{ isEditMode && posterImage$ ? 'Update Poster' : 'Upload Poster' }}
+          {{ isEditMode && posterImage$ ? ('EVENT_FORM_POSTER_UPDATE' | translate) : ('EVENT_FORM_POSTER_UPLOAD' | translate) }}
         </button>
-        <span class="file-name">No file chosen</span>
+        <span class="file-name">{{ 'EVENT_FORM_FILE_NO_CHOSEN' | translate }}</span>
       </div>
-    </div>    
+    </div>
 
     <div class="form-buttons">
       <button mat-raised-button color="primary" type="submit" [disabled]="eventForm.invalid">
-        {{ isEditMode ? 'Update' : 'Create' }}
+        {{ isEditMode ? ('BUTTON_UPDATE' | translate) : ('BUTTON_CREATE' | translate) }}
       </button>
-      <button mat-button type="button" (click)="onCancel()">Cancel</button>
+      <button mat-button type="button" (click)="onCancel()">
+        {{ 'BUTTON_CANCEL' | translate }}
+      </button>
     </div>
   </form>
-
-</mat-card>  
+</mat-card>

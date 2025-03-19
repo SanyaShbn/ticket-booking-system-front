@@ -1,91 +1,95 @@
 <mat-toolbar color="primary">
-    <span>Sport Events List</span>
-    <span class="spacer"></span>
-    <button mat-raised-button color="accent" (click)="addSportEvent()" style="margin-left: 10px;">Add New Sport Event</button>
-  </mat-toolbar>
-  
-  <app-filter [filterConfig]="filterConfig" (filterChanged)="onFilterChanged($event)"></app-filter>
+  <span>{{ 'SPORT_EVENTS_LIST_TITLE' | translate }}</span>
+  <span class="spacer"></span>
+  <button mat-raised-button color="accent" (click)="addSportEvent()" style="margin-left: 10px;">
+      {{ 'SPORT_EVENTS_ADD_BUTTON' | translate }}
+  </button>
+</mat-toolbar>
 
-  <div class="view-switch">
-    <mat-button-toggle-group #group="matButtonToggleGroup" (change)="toggleViewMode($event)">
-      <mat-button-toggle value="list" checked>List View</mat-button-toggle>
-      <mat-button-toggle value="gallery">Gallery View</mat-button-toggle>
-    </mat-button-toggle-group>
-  </div>  
-  
-  <div class="mat-elevation-z8">
-    <mat-table *ngIf="viewMode === 'list'" [dataSource]="dataSource" matSort (matSortChange)="loadSportEvents()">
+<app-filter [filterConfig]="filterConfig" (filterChanged)="onFilterChanged($event)"></app-filter>
+
+<div class="view-switch">
+  <mat-button-toggle-group #group="matButtonToggleGroup" (change)="toggleViewMode($event)">
+      <mat-button-toggle value="list" checked>{{ 'SPORT_EVENTS_VIEW_LIST' | translate }}</mat-button-toggle>
+      <mat-button-toggle value="gallery">{{ 'SPORT_EVENTS_VIEW_GALLERY' | translate }}</mat-button-toggle>
+  </mat-button-toggle-group>
+</div>  
+
+<div class="mat-elevation-z8">
+  <mat-table *ngIf="viewMode === 'list'" [dataSource]="dataSource" matSort (matSortChange)="loadSportEvents()">
       <ng-container matColumnDef="eventName">
-        <mat-header-cell *matHeaderCellDef>Event Name</mat-header-cell>
-        <mat-cell *matCellDef="let event">{{ event.eventName }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef>{{ 'SPORT_EVENTS_TABLE_EVENT_NAME' | translate }}</mat-header-cell>
+          <mat-cell *matCellDef="let event">{{ event.eventName }}</mat-cell>
       </ng-container>
-  
+
       <ng-container matColumnDef="eventDateTime">
-        <mat-header-cell *matHeaderCellDef>Event Date</mat-header-cell>
-        <mat-cell *matCellDef="let event">{{ event.eventDateTime | date: 'short' }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef>{{ 'SPORT_EVENTS_TABLE_EVENT_DATE' | translate }}</mat-header-cell>
+          <mat-cell *matCellDef="let event">{{ event.eventDateTime | date: 'short' }}</mat-cell>
       </ng-container>
-  
+
       <ng-container matColumnDef="arena">
-        <mat-header-cell *matHeaderCellDef>Arena</mat-header-cell>
-        <mat-cell *matCellDef="let event">{{ event.arenaName }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef>{{ 'SPORT_EVENTS_TABLE_ARENA' | translate }}</mat-header-cell>
+          <mat-cell *matCellDef="let event">{{ event.arenaName }}</mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="posterImage">
-        <mat-header-cell *matHeaderCellDef>Poster</mat-header-cell>
-        <mat-cell *matCellDef="let event">
-          <ng-container *ngIf="event.posterImage; else noPoster">
-            <img *ngIf="getPosterImage(event.posterImage) | async as posterUrl" [src]="posterUrl" alt="Poster" width="50">
-          </ng-container>
-          <ng-template #noPoster>No poster uploaded</ng-template>
-        </mat-cell>
+          <mat-header-cell *matHeaderCellDef>{{ 'SPORT_EVENTS_TABLE_POSTER' | translate }}</mat-header-cell>
+          <mat-cell *matCellDef="let event">
+              <ng-container *ngIf="event.posterImage; else noPoster">
+                  <img *ngIf="getPosterImage(event.posterImage) | async as posterUrl" [src]="posterUrl" alt="Poster" width="50">
+              </ng-container>
+              <ng-template #noPoster>{{ 'SPORT_EVENTS_NO_POSTER' | translate }}</ng-template>
+          </mat-cell>
       </ng-container>
-  
+
       <ng-container matColumnDef="actions">
-        <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-        <mat-cell *matCellDef="let event">
-          <button mat-icon-button (click)="editSportEvent(event)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button (click)="deleteSportEvent(event.id)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </mat-cell>
+          <mat-header-cell *matHeaderCellDef>{{ 'SPORT_EVENTS_TABLE_ACTIONS' | translate }}</mat-header-cell>
+          <mat-cell *matCellDef="let event">
+              <button mat-icon-button (click)="editSportEvent(event)">
+                  <mat-icon>{{ 'SPORT_EVENTS_ACTION_EDIT' | translate }}</mat-icon>
+              </button>
+              <button mat-icon-button (click)="deleteSportEvent(event.id)">
+                  <mat-icon>{{ 'SPORT_EVENTS_ACTION_DELETE' | translate }}</mat-icon>
+              </button>
+          </mat-cell>
       </ng-container>
-  
+
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-    </mat-table>
+  </mat-table>
 
-    <div *ngIf="viewMode === 'gallery'" class="sport-event-gallery">
+  <div *ngIf="viewMode === 'gallery'" class="sport-event-gallery">
       <div class="event-cards" *ngIf="!isLoading && dataSource.data.length > 0">
-         <mat-card *ngFor="let event of dataSource.data" class="event-card">
-           <mat-card-title>{{ event.eventName }}</mat-card-title>
-           <mat-card-subtitle>{{ event.eventDateTime | date: 'short' }}</mat-card-subtitle>
-           <img *ngIf="getPosterImage(event.posterImage) | async as posterUrl" [src]="posterUrl" alt="Poster" class="image" 
-           (click)="openImageDialog(posterUrl)" width="200">
-           <mat-card-content>
-            <p>Arena: {{ event.arenaName }}</p>
-           </mat-card-content>
-           <mat-card-actions>
-             <button mat-button color="primary" (click)="editSportEvent(event)">Edit</button>
-             <button mat-button color="warn" (click)="deleteSportEvent(event.id)">Delete</button>
-             <button *ngIf="event.posterImage" mat-button color="accent" (click)="downloadImage(event.posterImage)">Download poster image</button>
-           </mat-card-actions>
-        </mat-card>
+          <mat-card *ngFor="let event of dataSource.data" class="event-card">
+              <mat-card-title>{{ event.eventName }}</mat-card-title>
+              <mat-card-subtitle>{{ event.eventDateTime | date: 'short' }}</mat-card-subtitle>
+              <img *ngIf="getPosterImage(event.posterImage) | async as posterUrl" [src]="posterUrl" alt="Poster" class="image" 
+                   (click)="openImageDialog(posterUrl)" width="200">
+              <mat-card-content>
+                  <p>{{ 'SPORT_EVENTS_TABLE_ARENA' | translate }}: {{ event.arenaName }}</p>
+              </mat-card-content>
+              <mat-card-actions>
+                  <button mat-button color="primary" (click)="editSportEvent(event)">{{ 'SPORT_EVENTS_ACTION_EDIT' | translate }}</button>
+                  <button mat-button color="warn" (click)="deleteSportEvent(event.id)">{{ 'SPORT_EVENTS_ACTION_DELETE' | translate }}</button>
+                  <button *ngIf="event.posterImage" mat-button color="accent" (click)="downloadImage(event.posterImage)">
+                      {{ 'SPORT_EVENTS_ACTION_DOWNLOAD' | translate }}
+                  </button>
+              </mat-card-actions>
+          </mat-card>
       </div>
-    </div>
-  
-    <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="50" style="margin: 20px auto;"></mat-progress-spinner>
-  
-    <div *ngIf="!isLoading && dataSource.data.length === 0">
-      <p style="display: flex; justify-content: center;">No data available</p>
-    </div>
-  
-    <app-paginator 
+  </div>
+
+  <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="50" style="margin: 20px auto;"></mat-progress-spinner>
+
+  <div *ngIf="!isLoading && dataSource.data.length === 0">
+      <p style="display: flex; justify-content: center;">{{ 'SPORT_EVENTS_NO_DATA' | translate }}</p>
+  </div>
+
+  <app-paginator 
       [page]="page" 
       [size]="size" 
       [totalElements]="totalElements" 
       (pageChange)="onPageChange($event)" 
       (sizeChange)="onSizeChange($event)">
-    </app-paginator>
-</div>  
+  </app-paginator>
+</div>

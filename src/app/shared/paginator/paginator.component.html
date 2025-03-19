@@ -1,11 +1,17 @@
 <div class="paginator">
-    <button mat-button (click)="previousPage()" [disabled]="page === 0">Previous</button>
-    <span>Page {{ page + 1 }} of {{ math.ceil(totalElements / size) }}</span>
-    <button mat-button (click)="nextPage()" [disabled]="page >= math.ceil(totalElements / size) - 1">Next</button>
-    <mat-form-field>
-      <mat-label>Items per page</mat-label>
+  <button mat-button (click)="previousPage()" [disabled]="page === 0">
+      {{ 'PAGINATOR_PREVIOUS_BUTTON' | translate }}
+  </button>
+  <span>
+      {{ 'PAGINATOR_PAGE_INFO' | translate: { current: page + 1, total: math.ceil(totalElements / size) } }}
+  </span>
+  <button mat-button (click)="nextPage()" [disabled]="page >= math.ceil(totalElements / size) - 1">
+      {{ 'PAGINATOR_NEXT_BUTTON' | translate }}
+  </button>
+  <mat-form-field>
+      <mat-label>{{ 'PAGINATOR_ITEMS_PER_PAGE' | translate }}</mat-label>
       <mat-select [(value)]="size" (selectionChange)="onSizeChange($event.value)">
-        <mat-option *ngFor="let option of [5, 10, 20]" [value]="option">{{ option }}</mat-option>
+          <mat-option *ngFor="let option of [5, 10, 20]" [value]="option">{{ option }}</mat-option>
       </mat-select>
-    </mat-form-field>
-</div>  
+  </mat-form-field>
+</div>

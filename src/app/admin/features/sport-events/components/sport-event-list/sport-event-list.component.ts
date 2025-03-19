@@ -24,6 +24,8 @@ import { catchError, switchMap  } from 'rxjs/operators';
 import { ImageDialogComponent } from '../image-dialog/image-dialog.component';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { saveAs } from 'file-saver';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sport-event-list',
@@ -44,7 +46,8 @@ import { saveAs } from 'file-saver';
     MatProgressSpinnerModule,
     MatButtonToggleModule,
     MatCardModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    TranslateModule
   ]
 })
 export class SportEventListComponent implements OnInit, AfterViewInit {
@@ -59,17 +62,6 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatSort) sort!: MatSort;
 
-  filterConfig: FilterConfig[] = [
-    { label: 'Start Date', formControlName: 'startDate', type: 'date' },
-    { label: 'End Date', formControlName: 'endDate', type: 'date' },
-    { label: 'Arena', formControlName: 'arenaName', type: 'input' },
-    { label: 'Date Sort Order', formControlName: 'sortOrder', type: 'select', options: [
-      { value: '', viewValue: '-- Sorting --' },
-      { value: 'ASC', viewValue: 'Ascending' },
-      { value: 'DESC', viewValue: 'Descending' }
-    ]}
-  ];
-
   filters = {
     startDate: '',
     endDate: '',
@@ -77,15 +69,44 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
     sortOrder: ''
   };
 
+  filterConfig: FilterConfig[] = [];
+  private langChangeSubscription!: Subscription;
+
   constructor(
     private sportEventService: SportEventService, 
     private router: Router, 
     private sanitizer: DomSanitizer,
     public dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private translate: TranslateService      
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.updateFilterConfig();
+    
+    this.langChangeSubscription = this.translate.onLangChange.subscribe(() => {
+      this.updateFilterConfig();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.langChangeSubscription) {
+      this.langChangeSubscription.unsubscribe();
+    }
+  }
+
+  updateFilterConfig(): void {
+    this.filterConfig = [
+      { label: this.translate.instant('FILTER_START_DATE'), formControlName: 'startDate', type: 'date' },
+      { label: this.translate.instant('FILTER_END_DATE'), formControlName: 'endDate', type: 'date' },
+      { label: this.translate.instant('FILTER_ARENA'), formControlName: 'arenaName', type: 'input' },
+      { label: this.translate.instant('FILTER_DATE_SORT'), formControlName: 'sortOrder', type: 'select', options: [
+        { value: '', viewValue: this.translate.instant('FILTER_SORTING') },
+        { value: 'ASC', viewValue: this.translate.instant('FILTER_ASCENDING') },
+        { value: 'DESC', viewValue: this.translate.instant('FILTER_DESCENDING') }
+      ]}
+    ];
+  }
 
   ngAfterViewInit(): void {
     this.sort.sortChange.subscribe(() => {
@@ -111,7 +132,7 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
     ).subscribe(data => {
       this.dataSource.data = data.content.map((event: any) => ({
       ...event,
-      arenaName: event.arena?.name || 'Unknown'
+      arenaName: event.arena?.name || this.translate.instant('UNKNOWN_ARENA')
       }));
       this.totalElements = data.metadata.totalElements;
       this.isLoading = false;
@@ -134,8 +155,10 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
 
   deleteSportEvent(id: number): void {
     this.sportEventService.deleteSportEvent(id).subscribe(() => {
-      this.snackBar.open('Sport event deleted successfully', 'Close', {
-        duration: 3000
+      this.translate.get('SPORT_EVENT_DELETE_SUCCESS').subscribe((message) => {
+        this.snackBar.open(message, this.translate.instant('CLOSE'), {
+          duration: 3000
+        });
       });
       this.loadSportEvents();
     });

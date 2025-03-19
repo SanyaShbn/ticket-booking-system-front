@@ -11,6 +11,33 @@
     z-index: 1000;
     animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
 }
+
+.language-switch {
+    position: absolute;
+    top: 4px;
+    right: 60px;
+    z-index: 1000;
+}
+  
+.language-select {
+    color: white;
+    border-radius: 4px;
+    width: 130px;
+}
+  
+.language-select .mat-form-field-flex {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+  
+.language-select .mat-select-arrow {
+    color: white;
+}
+  
+.mat-option:hover {
+    background-color: #e63939;
+    color: white;
+}  
   
 @keyframes fadeIn {
     from { opacity: 0; }

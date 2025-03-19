@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,8 @@ import { LogoutConfirmationDialogComponent } from '../logout-confirmation-dialog
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Subscription } from 'rxjs';
+import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-top-bar',
@@ -24,18 +26,46 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrl: './top-bar.component.scss',
   standalone: true
 })
-export class TopBarComponent {
+export class TopBarComponent implements OnInit, OnDestroy {
   @Input() showLogout: boolean = true;
-  @Input() title: string = 'Welcome to our ticket booking app';
+  @Input() title: string = '';
 
-  constructor(private dialog: MatDialog, private authService: AuthService, private router: Router) {}
+  private langChangeSubscription!: Subscription;
+
+  constructor(
+    private dialog: MatDialog,
+    private authService: AuthService,
+    private router: Router,
+    private translate: TranslateService
+  ) {}
+  
+  ngOnInit(): void {
+    this.setTitle();
+
+    this.langChangeSubscription = this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.setTitle();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.langChangeSubscription) {
+      this.langChangeSubscription.unsubscribe();
+    }
+  }
+
+  private setTitle(): void {
+    if (!this.title) {
+      this.translate.get('APP_TITLE').subscribe((translatedTitle) => {
+        this.title = translatedTitle;
+      });
+    }
+  }
 
   openLogoutDialog(): void {
     const dialogRef = this.dialog.open(LogoutConfirmationDialogComponent);
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Dialog result: true true');
         this.onLogout();
       }
     });
@@ -48,7 +78,9 @@ export class TopBarComponent {
       },
       (error) => {
         console.error('Logout failed:', error);
-        alert('Logout failed. Please try again.');
+        this.translate.get('LOGOUT_FAILURE').subscribe((message) => {
+          alert(message);
+        });
       }
     );
   }

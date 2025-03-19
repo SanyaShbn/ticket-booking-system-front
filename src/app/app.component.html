@@ -1,3 +1,12 @@
+<div class="language-switch">
+  <mat-form-field appearance="fill" class="language-select">
+    <mat-select [(value)]="currentLang" (selectionChange)="switchLanguage($event.value)">
+      <mat-option value="en">English</mat-option>
+      <mat-option value="ru">Русский</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
 <router-outlet></router-outlet>
 
 <div *ngIf="status" class="status-message" (click)="closeStatusMessage()">

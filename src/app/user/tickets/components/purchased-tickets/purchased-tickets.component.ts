@@ -10,6 +10,8 @@ import { jsPDF } from 'jspdf';
 import '../../../../../fonts/Roboto-Regular-normal.js';
 import { TopBarComponent } from '../../../../shared/top-bar/top-bar.component';
 import { AuthService } from '../../../../auth/services/auth.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-purchased-tickets',
@@ -21,7 +23,8 @@ import { AuthService } from '../../../../auth/services/auth.service';
     MatTableModule,
     MatCardModule,
     MatButtonModule,
-    TopBarComponent
+    TopBarComponent,
+    TranslateModule
   ]
 })
 export class PurchasedTicketsComponent implements OnInit {
@@ -30,7 +33,13 @@ export class PurchasedTicketsComponent implements OnInit {
   eventId!: number;
   userId!: number;
 
-  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -78,20 +87,20 @@ export class PurchasedTicketsComponent implements OnInit {
     doc.setFont('Roboto-Regular', 'normal');
   
     doc.setFontSize(20);
-    doc.text('Ticket Information', 10, 10);
+    doc.text(this.translate.instant('TICKET_INFO_TITLE'), 10, 10);
 
     doc.setFontSize(12);
-    doc.text(`Ticket Numb.: ${ticket.ticketId}`, 10, 30);
-    doc.text(`Event Name: ${ticket.eventName}`, 10, 40);
-    doc.text(`Date: ${new Date(ticket.eventDateTime).toLocaleDateString()}`, 10, 50);
-    doc.text(`Time: ${new Date(ticket.eventDateTime).toLocaleTimeString()}`, 10, 60);
-    doc.text(`Arena: ${ticket.arenaName}, ${ticket.arenaCity}`, 10, 70);
-    doc.text(`Sector: ${ticket.sectorName}`, 10, 80);
-    doc.text(`Row: ${ticket.rowNumber}`, 10, 90);
-    doc.text(`Seat: ${ticket.seatNumber}`, 10, 100);
-    doc.text(`Price: ${ticket.price} BYN`, 10, 110);
-
-    doc.save(`ticket-${ticket.ticketId}.pdf`);
+    doc.text(`${this.translate.instant('TICKET_NUMBER')}: ${ticket.ticketId}`, 10, 30);
+    doc.text(`${this.translate.instant('EVENT_NAME')}: ${ticket.eventName}`, 10, 40);
+    doc.text(`${this.translate.instant('EVENT_DATE')}: ${new Date(ticket.eventDateTime).toLocaleDateString()}`, 10, 50);
+    doc.text(`${this.translate.instant('EVENT_TIME')}: ${new Date(ticket.eventDateTime).toLocaleTimeString()}`, 10, 60);
+    doc.text(`${this.translate.instant('ARENA')}: ${ticket.arenaName}, ${ticket.arenaCity}`, 10, 70);
+    doc.text(`${this.translate.instant('SECTOR')}: ${ticket.sectorName}`, 10, 80);
+    doc.text(`${this.translate.instant('ROW')}: ${ticket.rowNumber}`, 10, 90);
+    doc.text(`${this.translate.instant('SEAT')}: ${ticket.seatNumber}`, 10, 100);
+    doc.text(`${this.translate.instant('PRICE')}: ${ticket.price} BYN`, 10, 110);
+  
+    doc.save(`${this.translate.instant('TICKET_FILE_NAME_PREFIX')}-${ticket.ticketId}.pdf`);
   }
 
   goBack(): void {
