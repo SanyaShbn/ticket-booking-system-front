@@ -139,14 +139,25 @@ export class RowListComponent implements OnInit {
   }
 
   deleteRow(id: number): void {
-    this.rowService.deleteRow(id).subscribe(() => {
-      this.translate.get('ROW_DELETE_SUCCESS').subscribe((message) => {
-        this.snackBar.open(message, this.translate.instant('CLOSE'), {
-          duration: 3000,
+    this.rowService.deleteRow(id).subscribe(
+      () => {
+        this.translate.get('ROW_DELETE_SUCCESS').subscribe((message) => {
+          this.snackBar.open(message, this.translate.instant('CLOSE'), {
+            duration: 3000,
+          });
         });
-      });
-      this.loadRows();
-    });
+        this.loadRows();
+      },
+      (error) => {
+        this.translate.get('ROW_DELETE_FAILURE').subscribe((message) => {
+          this.snackBar.open(message, this.translate.instant('CLOSE'), {
+            duration: 3000,
+            panelClass: 'snackbar-error',
+          });
+        });
+        console.error('Error deleting row:', error);
+      }
+    );
   }
 
   goBack(): void {

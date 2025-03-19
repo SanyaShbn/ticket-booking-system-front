@@ -32,10 +32,10 @@
           <mat-header-cell *matHeaderCellDef>{{ 'TICKETS_TABLE_ACTIONS' | translate }}</mat-header-cell>
           <mat-cell *matCellDef="let ticket">
               <button mat-icon-button (click)="editTicket(ticket)">
-                  <mat-icon>{{ 'TICKETS_ACTION_EDIT' | translate }}</mat-icon>
+                  <mat-icon>edit</mat-icon>
               </button>
               <button mat-icon-button (click)="deleteTicket(ticket.id)">
-                  <mat-icon>{{ 'TICKETS_ACTION_DELETE' | translate }}</mat-icon>
+                  <mat-icon>delete</mat-icon>
               </button>
           </mat-cell>
       </ng-container>

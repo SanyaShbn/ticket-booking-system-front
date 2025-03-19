@@ -10,7 +10,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subscription } from 'rxjs';
-import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
+import { TranslateModule, TranslateService, LangChangeEvent } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-top-bar',
@@ -20,17 +20,18 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
     MatDialogModule,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule
+    MatTooltipModule,
+    TranslateModule
   ],
   templateUrl: './top-bar.component.html',
   styleUrl: './top-bar.component.scss',
   standalone: true
 })
-export class TopBarComponent implements OnInit, OnDestroy {
+export class TopBarComponent {
   @Input() showLogout: boolean = true;
   @Input() title: string = '';
 
-  private langChangeSubscription!: Subscription;
+  // private langChangeSubscription!: Subscription;
 
   constructor(
     private dialog: MatDialog,
@@ -39,27 +40,27 @@ export class TopBarComponent implements OnInit, OnDestroy {
     private translate: TranslateService
   ) {}
   
-  ngOnInit(): void {
-    this.setTitle();
+  // ngOnInit(): void {
+  //   this.setTitle();
 
-    this.langChangeSubscription = this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.setTitle();
-    });
-  }
+  //   this.langChangeSubscription = this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+  //     this.setTitle();
+  //   });
+  // }
 
-  ngOnDestroy(): void {
-    if (this.langChangeSubscription) {
-      this.langChangeSubscription.unsubscribe();
-    }
-  }
+  // ngOnDestroy(): void {
+  //   if (this.langChangeSubscription) {
+  //     this.langChangeSubscription.unsubscribe();
+  //   }
+  // }
 
-  private setTitle(): void {
-    if (!this.title) {
-      this.translate.get('APP_TITLE').subscribe((translatedTitle) => {
-        this.title = translatedTitle;
-      });
-    }
-  }
+  // private setTitle(): void {
+  //   if (!this.title) {
+  //     this.translate.get('APP_TITLE').subscribe((translatedTitle) => {
+  //       this.title = translatedTitle;
+  //     });
+  //   }
+  // }
 
   openLogoutDialog(): void {
     const dialogRef = this.dialog.open(LogoutConfirmationDialogComponent);

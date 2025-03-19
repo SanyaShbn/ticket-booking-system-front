@@ -154,14 +154,25 @@ export class SportEventListComponent implements OnInit, AfterViewInit {
   }
 
   deleteSportEvent(id: number): void {
-    this.sportEventService.deleteSportEvent(id).subscribe(() => {
-      this.translate.get('SPORT_EVENT_DELETE_SUCCESS').subscribe((message) => {
-        this.snackBar.open(message, this.translate.instant('CLOSE'), {
-          duration: 3000
+    this.sportEventService.deleteSportEvent(id).subscribe(
+      () => {
+        this.translate.get('SPORT_EVENT_DELETE_SUCCESS').subscribe((message) => {
+          this.snackBar.open(message, this.translate.instant('CLOSE'), {
+            duration: 3000
+          });
         });
-      });
-      this.loadSportEvents();
-    });
+        this.loadSportEvents();
+      },
+      (error) => {
+        this.translate.get('SPORT_EVENT_DELETE_FAILURE').subscribe((message) => {
+          this.snackBar.open(message, this.translate.instant('CLOSE'), {
+            duration: 3000,
+            panelClass: 'snackbar-error',
+          });
+        });
+        console.error('Error deleting sport event:', error);
+      }
+    );
   }
 
   getPosterImage(filename?: string): Observable<SafeUrl | null> {

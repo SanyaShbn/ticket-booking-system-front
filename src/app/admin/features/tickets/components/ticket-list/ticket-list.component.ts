@@ -138,14 +138,25 @@ export class TicketListComponent implements OnInit, AfterViewInit {
   }
 
   deleteTicket(id: number): void {
-    this.ticketService.deleteTicket(id).subscribe(() => {
-      this.translate.get('TICKET_DELETE_SUCCESS').subscribe((message) => {
-        this.snackBar.open(message, this.translate.instant('CLOSE'), {
-          duration: 3000
+    this.ticketService.deleteTicket(id).subscribe(
+      () => {
+        this.translate.get('TICKET_DELETE_SUCCESS').subscribe((message) => {
+          this.snackBar.open(message, this.translate.instant('CLOSE'), {
+            duration: 3000
+          });
         });
-      });
-      this.loadTickets();
-    });
+        this.loadTickets();
+      },
+      (error) => {
+        this.translate.get('TICKET_DELETE_FAILURE').subscribe((message) => {
+          this.snackBar.open(message, this.translate.instant('CLOSE'), {
+            duration: 3000,
+            panelClass: 'snackbar-error',
+          });
+        });
+        console.error('Error deleting ticket:', error);
+      }
+    );
   }
 
   goBack(): void {

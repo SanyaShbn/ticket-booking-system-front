@@ -143,15 +143,27 @@ export class ArenaListComponent implements OnInit {
   }
 
   deleteArena(id: number): void {
-    this.arenaService.deleteArena(id).subscribe(() => {
-      this.translate.get('ARENA_DELETE_SUCCESS').subscribe((message) => {
-        this.snackBar.open(message, this.translate.instant('CLOSE'), {
-          duration: 3000,
+    this.arenaService.deleteArena(id).subscribe(
+      () => {
+        this.translate.get('ARENA_DELETE_SUCCESS').subscribe((message) => {
+          this.snackBar.open(message, this.translate.instant('CLOSE'), {
+            duration: 3000,
+            panelClass: 'snackbar-success',
+          });
         });
-      });
-      this.loadArenas();
-    });
-  }
+        this.loadArenas();
+      },
+      (error) => {
+        this.translate.get('ARENA_DELETE_FAILURE').subscribe((message) => {
+          this.snackBar.open(message, this.translate.instant('CLOSE'), {
+            duration: 3000,
+            panelClass: 'snackbar-error',
+          });
+        });
+        console.error('Error deleting arena:', error);
+      }
+    );
+  }  
 
   onPageChange(newPage: number): void {
     this.page = newPage;

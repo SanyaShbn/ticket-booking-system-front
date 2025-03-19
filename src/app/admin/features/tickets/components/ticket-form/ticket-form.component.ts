@@ -160,13 +160,19 @@ export class TicketFormComponent implements OnInit {
   }
   
   
-  displaySeatFn(seat: any): string {
-    return seat 
-      ? `${this.translate.instant('SECTOR_LABEL')} ${seat.row.sector.sectorName}, ` +
-        `${this.translate.instant('ROW_LABEL')} ${seat.row.rowNumber}, ` +
-        `${this.translate.instant('SEAT_LABEL')} №${seat.seatNumber}`
-      : '';
-  }  
+  displaySeatFn = (seat: any): string => {
+    if (!seat) {
+      return '';
+    }
+  
+    const sectorLabel = this.translate.instant('SECTOR_LABEL');
+    const rowLabel = this.translate.instant('ROW_LABEL');
+    const seatLabel = this.translate.instant('SEAT_LABEL');
+  
+    return `${sectorLabel} ${seat.row.sector.sectorName}, ` +
+           `${rowLabel} ${seat.row.rowNumber}, ` +
+           `${seatLabel} №${seat.seatNumber}`;
+  };   
  
   onSeatSelected(selectedSeat: Seat): void {
     this.selectedSeat = selectedSeat;

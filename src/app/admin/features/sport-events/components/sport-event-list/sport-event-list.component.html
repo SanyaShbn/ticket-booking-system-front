@@ -46,10 +46,10 @@
           <mat-header-cell *matHeaderCellDef>{{ 'SPORT_EVENTS_TABLE_ACTIONS' | translate }}</mat-header-cell>
           <mat-cell *matCellDef="let event">
               <button mat-icon-button (click)="editSportEvent(event)">
-                  <mat-icon>{{ 'SPORT_EVENTS_ACTION_EDIT' | translate }}</mat-icon>
+                  <mat-icon>edit</mat-icon>
               </button>
               <button mat-icon-button (click)="deleteSportEvent(event.id)">
-                  <mat-icon>{{ 'SPORT_EVENTS_ACTION_DELETE' | translate }}</mat-icon>
+                  <mat-icon>delete</mat-icon>
               </button>
           </mat-cell>
       </ng-container>

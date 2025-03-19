@@ -144,14 +144,25 @@ export class SectorListComponent implements OnInit, AfterViewInit {
   }
 
   deleteSector(id: number): void {
-    this.sectorService.deleteSector(id).subscribe(() => {
-      this.translate.get('SECTOR_DELETE_SUCCESS').subscribe((message) => {
-        this.snackBar.open(message, this.translate.instant('CLOSE'), {
-          duration: 3000,
+    this.sectorService.deleteSector(id).subscribe(
+      () => {
+        this.translate.get('SECTOR_DELETE_SUCCESS').subscribe((message) => {
+          this.snackBar.open(message, this.translate.instant('CLOSE'), {
+            duration: 3000,
+          });
         });
-      });
-      this.loadSectors();
-    });
+        this.loadSectors();
+      },
+      (error) => {
+        this.translate.get('SECTOR_DELETE_FAILURE').subscribe((message) => {
+          this.snackBar.open(message, this.translate.instant('CLOSE'), {
+            duration: 3000,
+            panelClass: 'snackbar-error',
+          });
+        });
+        console.error('Error deleting sector:', error);
+      }
+    );
   }
 
   goBack(): void {

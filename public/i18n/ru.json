@@ -35,6 +35,7 @@
     "ARENAS_TABLE_GENERAL_SEATS": "Количество мест",
     "ARENAS_TABLE_ACTIONS": "Действия",
     "ARENAS_NO_DATA": "Данные отсутствуют",
+    "ARENA_DELETE_FAILURE": "Данные о выбранной арене нельзя удалить. Для нее уже запланированы спортивные события в соответствующем модуле программы",
 
     "SELECT_ARENA_TITLE": "Выберите арену, чтобы просмотреть её секторы",
     "ARENA_CAPACITY": "Вместимость",
@@ -55,6 +56,7 @@
     "ROWS_TABLE_SEATS_NUMBER": "Количество мест",
     "ROWS_TABLE_ACTIONS": "Действия",
     "ROWS_NO_DATA": "Данные отсутствуют",
+    "ROW_DELETE_FAILURE": "Данные о выбранном ряде арены нельзя удалить. На него уже добавлены билеты в соответствующем модуле программы",
 
     "SECTOR_FORM_NAME_LABEL": "Название сектора",
     "SECTOR_FORM_NAME_REQUIRED": "Название сектора обязательно",
@@ -75,6 +77,7 @@
     "SECTORS_TABLE_AVAILABLE_SEATS": "Доступное количество мест",
     "SECTORS_TABLE_ACTIONS": "Действия",
     "SECTORS_NO_DATA": "Данные отсутствуют",
+    "SECTOR_DELETE_FAILURE": "Данные о выбранном секторе арены нельзя удалить. На него уже добавлены билеты в соответствующем модуле программы",
 
     "SECTOR_SELECTION_BACK_BUTTON": "Назад к выбору арены",
     "SECTOR_SELECTION_TITLE": "Выберите сектор, чтобы просмотреть его ряды",
@@ -118,6 +121,7 @@
     "SPORT_EVENT_SELECTION_VIEW_TICKETS": "Просмотреть билеты",
     "SPORT_EVENT_SELECTION_ARENA_LABEL": "Арена",
     "SPORT_EVENT_SELECTION_NO_DATA": "Данные отсутствуют",
+    "SPORT_EVENT_DELETE_FAILURE": "Выбранное событие нельзя удалить, на него уже доступна продажа билетов",
 
     "TICKET_FORM_PRICE_LABEL": "Цена билета",
     "TICKET_FORM_PRICE_REQUIRED": "Цена билета обязательна",
@@ -252,6 +256,7 @@
     "SEAT_LABEL": "Место",
 
     "TICKET_DELETE_SUCCESS": "Билет успешно удален",
+    "TICKET_DELETE_FAILURE": "Данную запись о билете запрещено удалять. Билет уже продан покупателям",
     "FILTER_PRICE_SORT": "Порядок сортировки по цене",
     "UNKNOWN_SEAT": "Неизвестное место",
 
@@ -263,6 +268,7 @@
     "ACCESS_DENIED_MESSAGE": "Доступ запрещён: у вас нет необходимых прав",
 
     "APP_TITLE": "Добро пожаловать в наше приложение для бронирования билетов",
+    "ADMIN_DASHBOARD": "Панель администратора",
     "LOGOUT_FAILURE": "Не удалось выполнить выход. Пожалуйста, попробуйте ещё раз.",
 
     "USER_ID_UNAVAILABLE": "Идентификатор пользователя недоступен. Пожалуйста, попробуйте позже.",

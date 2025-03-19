@@ -1,5 +1,5 @@
 <mat-toolbar color="primary">
-    <span>{{ title }}</span>
+    <span>{{ title || ('APP_TITLE' | translate) }}</span>
     <span class="spacer"></span>
     <button mat-icon-button *ngIf="showLogout" matTooltip="Logout" (click)="openLogoutDialog()" aria-label="Logout">
         <mat-icon>logout</mat-icon>
