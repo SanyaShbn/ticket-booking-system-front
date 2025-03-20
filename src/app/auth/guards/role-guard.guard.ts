@@ -1,20 +1,16 @@
 import { Injectable } from '@angular/core';
 import { CanActivate } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RoleGuard implements CanActivate {
   constructor(
     private authService: AuthService,
-    private snackBar: MatSnackBar,
-    private translate: TranslateService
   ) {}
 
-  canActivate(route: any): boolean {
+  async canActivate(route: any): Promise<boolean> {
     const expectedRole = route.data.role;
     const userRole = this.authService.getUserRole();
 
@@ -22,13 +18,7 @@ export class RoleGuard implements CanActivate {
       return true;
     }
 
-    this.translate.get('ACCESS_DENIED_MESSAGE').subscribe((message) => {
-      this.snackBar.open(message, this.translate.instant('CLOSE'), {
-        duration: 3000,
-        panelClass: 'snackbar-error'
-      });
-    });
-
+    console.error('Error!!! You can not have access to this resource because of unsuitable authority');
     return false;
   }
 }

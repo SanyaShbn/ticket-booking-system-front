@@ -148,7 +148,6 @@ export class ArenaListComponent implements OnInit {
         this.translate.get('ARENA_DELETE_SUCCESS').subscribe((message) => {
           this.snackBar.open(message, this.translate.instant('CLOSE'), {
             duration: 3000,
-            panelClass: 'snackbar-success',
           });
         });
         this.loadArenas();
