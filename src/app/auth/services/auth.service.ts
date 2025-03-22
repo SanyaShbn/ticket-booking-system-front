@@ -166,9 +166,8 @@ export class AuthService {
   startTokenRefreshScheduler(): void {
     this.ngZone.runOutsideAngular(() => {
       const accessToken = this.getAccessToken();
-      const refreshToken = this.getRefreshToken();
   
-      if (accessToken && refreshToken) {
+      if (accessToken) {
         const expiryTime = this.getTokenExpiry(accessToken);
         const now = Date.now();
         const delay = expiryTime - now - 10_000;
